@@ -1,0 +1,8 @@
+﻿Field	Type	Null	Key	Default	Extra
+id	int unsigned	NO	PRI	NULL	auto_increment
+idGrupos	int unsigned	NO	MUL	NULL	
+idMateria	int unsigned	NO	MUL	NULL	
+Maestro	varchar(255)	YES		NULL	
+Horario	varchar(255)	YES		NULL	
+created_at	timestamp	YES		NULL	
+updated_at	timestamp	YES		NULL	

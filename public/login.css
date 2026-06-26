@@ -9,49 +9,98 @@
 }
 
 body {
-    /* Tu fondo verde oscuro */
-    background-color: #10504B;
+    background: #0b1220;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #333;
-}
-
-/* --- CONTENEDOR PRINCIPAL --- */
-.container {
-    background: white;
-    padding: 50px 40px 40px 40px; /* Aumentamos el padding superior a 50px por el logo */
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Oscurecí un poco la sombra para que contraste con tu fondo oscuro */
-    width: 100%;
-    max-width: 400px;
-    position: relative; /* CRUCIAL para que el logo flote respecto a esta tarjeta */
-    margin-top: 50px; /* Da espacio arriba para que el logo no choque con la pantalla */
-}
-
-/* --- LOGO FLOTANTE --- */
-.logo-container {
-    position: absolute;
-    top: -40px; /* Sube la mitad de su altura (80px / 2) */
-    left: 50%;
-    transform: translateX(-50%); /* Lo centra horizontalmente */
-    width: 90px;
-    height: 90px;
-    background-color: #ffffff; /* Fondo blanco */
-    border-radius: 50%; /* Círculo perfecto */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: #111827;
     overflow: hidden;
-    border: 3px solid #ffffff; /* Borde blanco */
 }
 
-.logo-img {
-    width: 100%;
+.auth-shell {
+    width: min(980px, calc(100vw - 40px));
+    padding: 20px 0;
+    position: relative;
+    z-index: 1;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("/imgs/gym.jpeg");
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.05) contrast(1.05);
+    transform: scale(1.02);
+    z-index: 0;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.55));
+    z-index: 0;
+}
+
+.auth-card {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.auth-visual {
+    position: relative;
+    background-image: url("/imgs/jaguar.png");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 36px 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 520px;
+}
+
+.auth-visual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(16, 80, 75, 0.78), rgba(2, 6, 23, 0.78));
+    z-index: 0;
+}
+
+.auth-visual::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -22px;
+    width: 44px;
     height: 100%;
-    object-fit: cover; /* Cambia a 'contain' si tu logo se corta */
+    background:
+        radial-gradient(22px 26px at 0 26px, transparent 98%, rgba(255,255,255,1) 100%) 0 0/44px 52px repeat-y;
+    z-index: 2;
+}
+
+.visual-content,
+.visual-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.visual-content { min-height: 1px; }
+
+.auth-form {
+    padding: 44px 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 h2 {
@@ -120,7 +169,7 @@ h2 {
 .btn {
     width: 100%;
     padding: 14px;
-    background: #5FAF3F; /* Tu botón oscuro */
+    background: #10504B;
     color: white;
     border: none;
     border-radius: 8px;
@@ -132,30 +181,22 @@ h2 {
 }
 
 .btn:hover {
-    background: #70a75a; /* Tu color de hover */
+    background: #0e4642;
 }
 
 .btn:active {
     transform: scale(0.98);
 }
 
-/* --- Texto inferior (Enlaces de registro/login) --- */
-.toggle-text {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 14px;
-    color: #777;
-}
-
-.toggle-text a, .toggle-text span {
-    color: #111;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.toggle-text a:hover, .toggle-text span:hover {
-    text-decoration: underline;
-    color: #a17171; /* Le agregué tu color de acento al pasar el mouse por el enlace, se verá genial */
+@media (max-width: 920px) {
+    .auth-card { grid-template-columns: 1fr; }
+    .auth-visual { 
+        min-height: 260px; 
+        padding: 28px 24px; 
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: #0b1220;
+    }
+    .auth-visual::after { display: none; }
+    .auth-form { padding: 34px 22px; }
 }

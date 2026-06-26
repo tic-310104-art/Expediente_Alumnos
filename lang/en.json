@@ -1,0 +1,238 @@
+{
+    "General": "General",
+    "Gestión de Alumnos": "Student Management",
+    "Gestión de Tutores": "Tutor Management",
+    "Gestión Administradores": "Admin Management",
+    "Carreras y Grupos": "Careers and Groups",
+    "Mi Inicio": "My Home",
+    "Mis Alumnos": "My Students",
+    "Reportes": "Reports",
+    "Mi Perfil": "My Profile",
+    "Mis Citas": "My Appointments",
+    "Mi Desempeño": "My Performance",
+    "Psicología": "Psychology",
+    "Mis Asesorías": "My Advisories",
+    "Salir": "Logout",
+    "Expediente del Alumno": "Student Record",
+    "Matrícula": "ID Number",
+    "Tutor": "Tutor",
+    "Sin Asignar": "Unassigned",
+    "Estatus": "Status",
+    "Información Personal": "Personal Information",
+    "Correo Inst": "Inst. Email",
+    "Teléfono": "Phone",
+    "Cuatrimestre Actual": "Current Term",
+    "Grupo": "Group",
+    "Progreso Académico": "Academic Progress",
+    "Promedio General": "GPA",
+    "Descargar Expediente Académico": "Download Academic Record",
+    "Historial / Carga Académica": "Academic History / Load",
+    "Ciclo": "Term",
+    "Materia": "Subject",
+    "Profesor": "Teacher",
+    "Calificación": "Grade",
+    "Horario": "Schedule",
+    "No hay registros académicos.": "No academic records found.",
+    "Administración General": "General Administration",
+    "Estadísticas Generales": "General Statistics",
+    "Total Alumnos": "Total Students",
+    "Total Tutores": "Total Tutors",
+    "Total Administradores": "Total Admins",
+    "Alumnos por Carrera": "Students by Career",
+    "Tutores por Carrera": "Tutors by Career",
+    "Respaldos Automatizados": "Automated Backups",
+    "Agendar Respaldo": "Schedule Backup",
+    "Fecha seleccionada:": "Selected date:",
+    "Hora del respaldo:": "Backup time:",
+    "Cambiar Foto de Perfil": "Change Profile Photo",
+    "Subiendo imagen...": "Uploading image...",
+    "Por favor espera": "Please wait",
+    "¡Éxito!": "Success!",
+    "Foto de perfil actualizada.": "Profile photo updated.",
+    "Error": "Error",
+    "No se pudo subir la imagen": "Could not upload image",
+    "Alumno registrado correctamente.": "Student registered successfully.",
+    "Datos del alumno actualizados correctamente.": "Student data updated successfully.",
+    "Alumno eliminado y su historial ha sido desvinculado.": "Student deleted and history unlinked.",
+    "Foto actualizada correctamente": "Photo updated successfully",
+    "No se encontró el perfil": "Profile not found",
+    "Carrera creada exitosamente.": "Career created successfully.",
+    "Carrera actualizada correctamente.": "Career updated successfully.",
+    "Carrera eliminada y desvinculada exitosamente.": "Career deleted and unlinked successfully.",
+    "Beca creada correctamente.": "Scholarship created successfully.",
+    "Beca asignada correctamente.": "Scholarship assigned successfully.",
+    "Beca eliminada correctamente.": "Scholarship deleted successfully.",
+    "Respaldo programado con éxito para el :date a las :time": "Backup scheduled successfully for :date at :time",
+    "Administrador creado correctamente.": "Admin created successfully.",
+    "Administrador actualizado correctamente.": "Admin updated successfully.",
+    "Administrador eliminado correctamente.": "Admin deleted successfully.",
+    "Contraseña incorrecta": "Incorrect password",
+    "Acción crítica no autorizada": "Unauthorized critical action",
+    "Sesión crítica expirada o inválida": "Critical session expired or invalid",
+    "Nombre(s)": "First Name(s)",
+    "Apellidos": "Last Name(s)",
+    "Número de Teléfono": "Phone Number",
+    "Selecciona una Carrera": "Select a Career",
+    "Selecciona un Grupo": "Select a Group",
+    "Selecciona un Tutor": "Select a Tutor",
+    "Limpiar": "Clear",
+    "Guardar Alumno": "Save Student",
+    "Formulario de Alumno": "Student Form",
+    "Directorio de Alumnos": "Student Directory",
+    "Todas": "All",
+    "Todos": "All",
+    "Activo": "Active",
+    "Baja": "Inactive",
+    "Egresado": "Graduated",
+    "Limpiar Filtros": "Clear Filters",
+    "Nombre Completo": "Full Name",
+    "Sin Carrera": "No Career",
+    "Correo": "Email",
+    "Rol": "Role",
+    "Acciones": "Actions",
+    "Acción Crítica": "Critical Action",
+    "Esta acción requiere confirmación. Por favor, ingresa tu contraseña para continuar:": "This action requires confirmation. Please enter your password to continue:",
+    "Confirmar": "Confirm",
+    "Cancelar": "Cancel",
+    "Tutorados": "Tutees",
+    "Alumnos": "Students",
+    "Asignar Alumno": "Assign Student",
+    "Asignar Alumno a": "Assign Student to",
+    "Selecciona el Alumno": "Select Student",
+    "Buscar alumno...": "Search student...",
+    "Asignar": "Assign",
+    "Debes seleccionar un alumno": "You must select a student",
+    "Alumno asignado al tutor correctamente.": "Student assigned to tutor successfully.",
+    "Generando Token de Seguridad": "Generating Security Token",
+    "Por favor espera...": "Please wait...",
+    "¡Token Generado!": "Token Generated!",
+    "Se ha generado un token de acceso seguro válido por 8 horas.": "A secure access token valid for 8 hours has been generated.",
+    "Este token te permite realizar ediciones y eliminaciones sin pedir contraseña temporalmente.": "This token allows you to perform edits and deletions without asking for a password temporarily.",
+    "Entendido": "Understood",
+    "No se pudo generar el token: ": "Could not generate token: ",
+    "Token JWT generado exitosamente": "JWT Token generated successfully",
+    "Token no proporcionado": "Token not provided",
+    "Token inválido o expirado": "Invalid or expired token",
+    "Token válido": "Valid token",
+    "Error de verificación: ": "Verification error: ",
+    "No autorizado": "Unauthorized",
+    "Formulario de Tutor": "Tutor Form",
+    "Clave Trabajador": "Employee ID",
+    "Guardar Tutor": "Save Tutor",
+    "Lista de Tutores": "Tutor List",
+    "Clave": "ID",
+    "Actividad Reciente": "Recent Activity",
+    "UniAdmin": "UniAdmin",
+    "Servicios Escolares": "Student Services",
+    "Panel Tutor": "Tutor Panel",
+    "Panel Alumno": "Student Panel",
+    "Logo Institucional": "Institutional Logo",
+    "Inicio de Sesión": "Login",
+    "Iniciar Sesión": "Sign In",
+    "Correo Electrónico": "Email",
+    "Contraseña": "Password",
+    "Iniciar": "Sign In",
+    "Registrar Cuenta": "Create Account",
+    "Matrícula Escolar": "Student ID",
+    "Correo Institucional": "Institutional Email",
+    "Confirmar Contraseña": "Confirm Password",
+    "Registrarse": "Sign Up",
+    "¿Ya tienes cuenta?": "Already have an account?",
+    "Inicia Sesión": "Sign In",
+    "Logo": "Logo",
+    "Descargar PDF": "Download PDF",
+    "Mi Reporte de Desempeño": "My Performance Report",
+    "Mi Bitácora de Desempeño": "My Performance Log",
+    "Resumen de Evaluaciones": "Evaluation Summary",
+    "Promedio": "Average",
+    "Materias": "Subjects",
+    "Nivel de Riesgo": "Risk Level",
+    "Historial de la Bitácora de Tutoría": "Tutoring Log History",
+    "Citas de Psicología": "Psychology Appointments",
+    "Citas de Servicio Psicológico": "Psychology Service Appointments",
+    "Seguimiento de Citas en Psicología": "Psychology Appointment Tracking",
+    "Fecha de la Cita": "Appointment Date",
+    "Canalizado por": "Referred by",
+    "Historial de Asesorías Solicitadas": "Requested Advisories History",
+    "Fecha y Hora": "Date & Time",
+    "Motivo / Tema de Asesoría": "Advisory Topic",
+    "Finalizada": "Finished",
+    "Programada": "Scheduled",
+    "No tienes registros de asesorías académicas programadas.": "You have no scheduled advisory records."
+    ,"PDF":"PDF"
+    ,"No asignado":"Unassigned"
+    ,"Próximas Citas y Seguimiento":"Upcoming Appointments and Follow-up"
+    ,"Motivo de la Cita":"Appointment Reason"
+    ,"Mis Citas de Tutoría":"My Tutoring Appointments"
+    ,"Realizada":"Completed"
+    ,"No tienes citas de tutorías agendadas por el momento.":"You have no tutoring appointments scheduled at the moment."
+    ,"Bienvenido":"Welcome"
+    ,"Accede a tu panel para consultar tu información y seguimiento académico.":"Access your dashboard to view your information and academic follow-up."
+    ,"Universidad Tecnológica de Nayarit":"Universidad Tecnológica de Nayarit"
+    ,"Control del personal académico":"Academic staff control"
+    ,"Asignar Grupo":"Assign Group"
+    ,"Asignar Grupo a":"Assign Group to"
+    ,"Selecciona el Grupo":"Select Group"
+    ,"Buscar grupo...":"Search group..."
+    ,"Debes seleccionar un grupo":"You must select a group"
+    ,"Grupo asignado al tutor correctamente.":"Group assigned to tutor successfully."
+    ,"Foto del administrador":"Administrator photo"
+    ,"Dom":"Sun"
+    ,"Lun":"Mon"
+    ,"Mar":"Tue"
+    ,"Mié":"Wed"
+    ,"Jue":"Thu"
+    ,"Vie":"Fri"
+    ,"Sáb":"Sat"
+    ,"Enero":"January"
+    ,"Febrero":"February"
+    ,"Marzo":"March"
+    ,"Abril":"April"
+    ,"Mayo":"May"
+    ,"Junio":"June"
+    ,"Julio":"July"
+    ,"Agosto":"August"
+    ,"Septiembre":"September"
+    ,"Octubre":"October"
+    ,"Noviembre":"November"
+    ,"Diciembre":"December"
+    ,"Panel de Tutoría":"Tutoring Panel"
+    ,"Foto del tutor":"Tutor photo"
+    ,"Departamento Académico":"Academic Department"
+    ,"Resumen de Tutorados":"Tutees Summary"
+    ,"Alumnos Asignados":"Assigned Students"
+    ,"En Riesgo Académico":"At Academic Risk"
+    ,"Logs de Actividad":"Activity Logs"
+    ,"Nuevo":"New"
+    ,"Historial de movimientos en el sistema":"System activity history"
+    ,"Total":"Total"
+    ,"Buscar por acción o IP...":"Search by action or IP..."
+    ,"Todos los Roles":"All Roles"
+    ,"Administradores":"Administrators"
+    ,"Tipo (CRUD)":"Type (CRUD)"
+    ,"Alta":"Create"
+    ,"Edición":"Edit"
+    ,"Baja":"Delete"
+    ,"Filtrar":"Filter"
+    ,"Limpiar":"Clear"
+    ,"Anterior":"Previous"
+    ,"Siguiente":"Next"
+    ,"Página":"Page"
+    ,"No se encontraron registros de actividad.":"No activity records found."
+    ,"Plan Educativo":"Educational Plan"
+    ,"Carrera creada exitosamente.":"Career created successfully."
+    ,"¿Eliminar este grupo?":"Delete this group?"
+    ,"No hay grupos registrados para esta carrera.":"No groups registered for this career."
+    ,"Agregar Materia al Plan":"Add Subject to Plan"
+    ,"Materias Registradas en el Plan":"Subjects Registered in the Plan"
+    ,"Aún no se han registrado materias para este plan de estudios.":"No subjects have been registered for this educational plan yet."
+    ,"Gestionar Carga":"Manage Load"
+    ,"Carga Académica":"Academic Load"
+    ,"Sin Maestro":"No Teacher"
+    ,"Sin Horario":"No Schedule"
+    ,"Sin Carga":"No Load"
+    ,"ASIGNADA":"ASSIGNED"
+    ,"Sin Carga Académica":"No Academic Load"
+    ,"Ocultar Carga":"Hide Load"
+    ,"Ver Carga":"Show Load"
+}

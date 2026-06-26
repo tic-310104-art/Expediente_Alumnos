@@ -1,0 +1,220 @@
+{
+    "General": "General",
+    "Gestión de Alumnos": "Gestión de Alumnos",
+    "Gestión de Tutores": "Gestión de Tutores",
+    "Gestión Administradores": "Gestión Administradores",
+    "Carreras y Grupos": "Carreras y Grupos",
+    "Mi Inicio": "Mi Inicio",
+    "Mis Alumnos": "Mis Alumnos",
+    "Reportes": "Reportes",
+    "Mi Perfil": "Mi Perfil",
+    "Mis Citas": "Mis Citas",
+    "Mi Desempeño": "Mi Desempeño",
+    "Psicología": "Psicología",
+    "Mis Asesorías": "Mis Asesorías",
+    "Salir": "Salir",
+    "Expediente del Alumno": "Expediente del Alumno",
+    "Matrícula": "Matrícula",
+    "Tutor": "Tutor",
+    "Sin Asignar": "Sin Asignar",
+    "Estatus": "Estatus",
+    "Información Personal": "Información Personal",
+    "Correo Inst": "Correo Inst.",
+    "Teléfono": "Teléfono",
+    "Cuatrimestre Actual": "Cuatrimestre Actual",
+    "Grupo": "Grupo",
+    "Progreso Académico": "Progreso Académico",
+    "Promedio General": "Promedio General",
+    "Descargar Expediente Académico": "Descargar Expediente Académico",
+    "Historial / Carga Académica": "Historial / Carga Académica",
+    "Ciclo": "Ciclo",
+    "Materia": "Materia",
+    "Profesor": "Profesor",
+    "Calificación": "Calificación",
+    "Horario": "Horario",
+    "No hay registros académicos.": "No hay registros académicos.",
+    "Administración General": "Administración General",
+    "Estadísticas Generales": "Estadísticas Generales",
+    "Total Alumnos": "Total Alumnos",
+    "Total Tutores": "Total Tutores",
+    "Total Administradores": "Total Administradores",
+    "Alumnos por Carrera": "Alumnos por Carrera",
+    "Tutores por Carrera": "Tutores por Carrera",
+    "Respaldos Automatizados": "Respaldos Automatizados",
+    "Agendar Respaldo": "Agendar Respaldo",
+    "Fecha seleccionada:": "Fecha seleccionada:",
+    "Hora del respaldo:": "Hora del respaldo:",
+    "Cambiar Foto de Perfil": "Cambiar Foto de Perfil",
+    "Subiendo imagen...": "Subiendo imagen...",
+    "Por favor espera": "Por favor espera",
+    "¡Éxito!": "¡Éxito!",
+    "Foto de perfil actualizada.": "Foto de perfil actualizada.",
+    "Error": "Error",
+    "No se pudo subir la imagen": "No se pudo subir la imagen",
+    "Alumno registrado correctamente.": "Alumno registrado correctamente.",
+    "Datos del alumno actualizados correctamente.": "Datos del alumno actualizados correctamente.",
+    "Alumno eliminado y su historial ha sido desvinculado.": "Alumno eliminado y su historial ha sido desvinculado.",
+    "Foto actualizada correctamente": "Foto actualizada correctamente",
+    "No se encontró el perfil": "No se encontró el perfil",
+    "Carrera creada exitosamente.": "Carrera creada exitosamente.",
+    "Carrera actualizada correctamente.": "Carrera actualizada correctamente.",
+    "Carrera eliminada y desvinculada exitosamente.": "Carrera eliminada y desvinculada exitosamente.",
+    "Beca creada correctamente.": "Beca creada correctamente.",
+    "Beca asignada correctamente.": "Beca asignada correctamente.",
+    "Beca eliminada correctamente.": "Beca eliminada correctamente.",
+    "Respaldo programado con éxito para el :date a las :time": "Respaldo programado con éxito para el :date a las :time",
+    "Administrador creado correctamente.": "Administrador creado correctamente.",
+    "Administrador actualizado correctamente.": "Administrador actualizado correctamente.",
+    "Administrador eliminado correctamente.": "Administrador eliminado correctamente.",
+    "Contraseña incorrecta": "Contraseña incorrecta",
+    "Acción crítica no autorizada": "Acción crítica no autorizada",
+    "Sesión crítica expirada o inválida": "Sesión crítica expirada o inválida",
+    "Nombre(s)": "Nombre(s)",
+    "Apellidos": "Apellidos",
+    "Número de Teléfono": "Número de Teléfono",
+    "Selecciona una Carrera": "Selecciona una Carrera",
+    "Selecciona un Grupo": "Selecciona un Grupo",
+    "Selecciona un Tutor": "Selecciona un Tutor",
+    "Limpiar": "Limpiar",
+    "Guardar Alumno": "Guardar Alumno",
+    "Formulario de Alumno": "Formulario de Alumno",
+    "Directorio de Alumnos": "Directorio de Alumnos",
+    "Todas": "Todas",
+    "Todos": "Todos",
+    "Activo": "Activo",
+    "Baja": "Baja",
+    "Egresado": "Egresado",
+    "Limpiar Filtros": "Limpiar Filtros",
+    "Nombre Completo": "Nombre Completo",
+    "Sin Carrera": "Sin Carrera",
+    "Correo": "Correo",
+    "Rol": "Rol",
+    "Acciones": "Acciones",
+    "Acción Crítica": "Acción Crítica",
+    "Esta acción requiere confirmación. Por favor, ingresa tu contraseña para continuar:": "Esta acción requiere confirmación. Por favor, ingresa tu contraseña para continuar:",
+    "Confirmar": "Confirmar",
+    "Cancelar": "Cancelar",
+    "Generando Token de Seguridad": "Generando Token de Seguridad",
+    "Por favor espera...": "Por favor espera...",
+    "¡Token Generado!": "¡Token Generado!",
+    "Se ha generado un token de acceso seguro válido por 8 horas.": "Se ha generado un token de acceso seguro válido por 8 horas.",
+    "Este token te permite realizar ediciones y eliminaciones sin pedir contraseña temporalmente.": "Este token te permite realizar ediciones y eliminaciones sin pedir contraseña temporalmente.",
+    "Entendido": "Entendido",
+    "No se pudo generar el token: ": "No se pudo generar el token: ",
+    "Token JWT generado exitosamente": "Token JWT generado exitosamente",
+    "Token no proporcionado": "Token no proporcionado",
+    "Token inválido o expirado": "Token inválido o expirado",
+    "Token válido": "Token válido",
+    "Error de verificación: ": "Error de verificación: ",
+    "No autorizado": "No autorizado",
+    "Formulario de Tutor": "Formulario de Tutor",
+    "Clave Trabajador": "Clave Trabajador",
+    "Guardar Tutor": "Guardar Tutor",
+    "Lista de Tutores": "Lista de Tutores",
+    "Clave": "Clave",
+    "Actividad Reciente": "Actividad Reciente",
+    "Tutorados": "Tutorados",
+    "Alumnos": "Alumnos",
+    "Asignar Alumno": "Asignar Alumno",
+    "Asignar Alumno a": "Asignar Alumno a",
+    "Selecciona el Alumno": "Selecciona el Alumno",
+    "Buscar alumno...": "Buscar alumno...",
+    "Asignar": "Asignar",
+    "Debes seleccionar un alumno": "Debes seleccionar un alumno",
+    "Alumno asignado al tutor correctamente.": "Alumno asignado al tutor correctamente.",
+    "Descargar PDF": "Descargar PDF",
+    "Mi Reporte de Desempeño": "Mi Reporte de Desempeño",
+    "Mi Bitácora de Desempeño": "Mi Bitácora de Desempeño",
+    "Resumen de Evaluaciones": "Resumen de Evaluaciones",
+    "Promedio": "Promedio",
+    "Materias": "Materias",
+    "Nivel de Riesgo": "Nivel de Riesgo",
+    "Historial de la Bitácora de Tutoría": "Historial de la Bitácora de Tutoría",
+    "Citas de Psicología": "Citas de Psicología",
+    "Citas de Servicio Psicológico": "Citas de Servicio Psicológico",
+    "Seguimiento de Citas en Psicología": "Seguimiento de Citas en Psicología",
+    "Fecha de la Cita": "Fecha de la Cita",
+    "Canalizado por": "Canalizado por",
+    "Historial de Asesorías Solicitadas": "Historial de Asesorías Solicitadas",
+    "Fecha y Hora": "Fecha y Hora",
+    "Motivo / Tema de Asesoría": "Motivo / Tema de Asesoría",
+    "Finalizada": "Finalizada",
+    "Programada": "Programada",
+    "No tienes registros de asesorías académicas programadas.": "No tienes registros de asesorías académicas programadas."
+    ,"PDF":"PDF"
+    ,"No asignado":"No asignado"
+    ,"Próximas Citas y Seguimiento":"Próximas Citas y Seguimiento"
+    ,"Motivo de la Cita":"Motivo de la Cita"
+    ,"Mis Citas de Tutoría":"Mis Citas de Tutoría"
+    ,"Realizada":"Realizada"
+    ,"No tienes citas de tutorías agendadas por el momento.":"No tienes citas de tutorías agendadas por el momento."
+    ,"Bienvenido":"Bienvenido"
+    ,"Accede a tu panel para consultar tu información y seguimiento académico.":"Accede a tu panel para consultar tu información y seguimiento académico."
+    ,"Universidad Tecnológica de Nayarit":"Universidad Tecnológica de Nayarit"
+    ,"Control del personal académico":"Control del personal académico"
+    ,"Asignar Grupo":"Asignar Grupo"
+    ,"Asignar Grupo a":"Asignar Grupo a"
+    ,"Selecciona el Grupo":"Selecciona el Grupo"
+    ,"Buscar grupo...":"Buscar grupo..."
+    ,"Debes seleccionar un grupo":"Debes seleccionar un grupo"
+    ,"Grupo asignado al tutor correctamente.":"Grupo asignado al tutor correctamente."
+    ,"Foto del administrador":"Foto del administrador"
+    ,"Dom":"Dom"
+    ,"Lun":"Lun"
+    ,"Mar":"Mar"
+    ,"Mié":"Mié"
+    ,"Jue":"Jue"
+    ,"Vie":"Vie"
+    ,"Sáb":"Sáb"
+    ,"Enero":"Enero"
+    ,"Febrero":"Febrero"
+    ,"Marzo":"Marzo"
+    ,"Abril":"Abril"
+    ,"Mayo":"Mayo"
+    ,"Junio":"Junio"
+    ,"Julio":"Julio"
+    ,"Agosto":"Agosto"
+    ,"Septiembre":"Septiembre"
+    ,"Octubre":"Octubre"
+    ,"Noviembre":"Noviembre"
+    ,"Diciembre":"Diciembre"
+    ,"Panel de Tutoría":"Panel de Tutoría"
+    ,"Foto del tutor":"Foto del tutor"
+    ,"Departamento Académico":"Departamento Académico"
+    ,"Resumen de Tutorados":"Resumen de Tutorados"
+    ,"Alumnos Asignados":"Alumnos Asignados"
+    ,"En Riesgo Académico":"En Riesgo Académico"
+    ,"Logs de Actividad":"Logs de Actividad"
+    ,"Nuevo":"Nuevo"
+    ,"Historial de movimientos en el sistema":"Historial de movimientos en el sistema"
+    ,"Total":"Total"
+    ,"Buscar por acción o IP...":"Buscar por acción o IP..."
+    ,"Todos los Roles":"Todos los Roles"
+    ,"Administradores":"Administradores"
+    ,"Tipo (CRUD)":"Tipo (CRUD)"
+    ,"Alta":"Alta"
+    ,"Edición":"Edición"
+    ,"Baja":"Baja"
+    ,"Filtrar":"Filtrar"
+    ,"Limpiar":"Limpiar"
+    ,"Anterior":"Anterior"
+    ,"Siguiente":"Siguiente"
+    ,"Página":"Página"
+    ,"No se encontraron registros de actividad.":"No se encontraron registros de actividad."
+    ,"Plan Educativo":"Plan Educativo"
+    ,"Carrera creada exitosamente.":"Carrera creada exitosamente."
+    ,"¿Eliminar este grupo?":"¿Eliminar este grupo?"
+    ,"No hay grupos registrados para esta carrera.":"No hay grupos registrados para esta carrera."
+    ,"Agregar Materia al Plan":"Agregar Materia al Plan"
+    ,"Materias Registradas en el Plan":"Materias Registradas en el Plan"
+    ,"Aún no se han registrado materias para este plan de estudios.":"Aún no se han registrado materias para este plan de estudios."
+    ,"Gestionar Carga":"Gestionar Carga"
+    ,"Carga Académica":"Carga Académica"
+    ,"Sin Maestro":"Sin Maestro"
+    ,"Sin Horario":"Sin Horario"
+    ,"Sin Carga":"Sin Carga"
+    ,"ASIGNADA":"ASIGNADA"
+    ,"Sin Carga Académica":"Sin Carga Académica"
+    ,"Ocultar Carga":"Ocultar Carga"
+    ,"Ver Carga":"Ver Carga"
+}

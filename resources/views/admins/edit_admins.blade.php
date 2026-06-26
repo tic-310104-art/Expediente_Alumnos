@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Administrador | UniAdmin</title>
+    <link rel="stylesheet" href="{{ asset('expedienteG.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        @include('partials.sidebar', ['active' => 'admins'])
+
+        <main class="main-content">
+            <header class="student-header">
+                <div class="student-profile">
+                    <div class="student-info">
+                        <h1>Editar Administrador: {{ $admin->Nombre ?? $admin->Clave_Trabajador }}</h1>
+                        <p class="student-id">Actualización de credenciales y nivel de acceso</p>
+                    </div>
+                </div>
+            </header>
+
+            @if($errors->any())
+                <div style="background: #ef4444; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin-bottom: 5px; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Errores de validación:</p>
+                    <ul style="margin-left: 20px; font-size: 0.9rem;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="dashboard-grid">
+                <div class="card full-width">
+                    <h3><i class="fa-solid fa-user-pen"></i> Modificar Datos de Acceso</h3>
+                    
+                    <form id="edit-admin-form" action="{{ route('servicios.update', $admin->idServicios_Escolares) }}" method="POST">
+                        @csrf
+                        @method('PUT') 
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label>Clave</label>
+                                <input type="text" name="Clave_Trabajador" class="form-control" value="{{ old('Clave_Trabajador', $admin->Clave_Trabajador)}}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Correo Electrónico (Usuario)</label>
+                                <input type="email" name="Correo" class="form-control" value="{{ old('Correo', $admin->Correo ?? $admin->Correo_inst ?? $admin->Email) }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Nueva Contraseña (Opcional)</label>
+                                <input type="password" name="Password" class="form-control" placeholder="Dejar en blanco para no cambiar">
+                                <small style="color: #666; font-size: 0.8rem;">Solo escribe si deseas actualizar la clave actual.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Telefono</label>
+                                <input type="text" name="Telefono" class="form-control" value="{{ old('Telefono', $admin->Telefono) }}" required>
+                            </div>
+
+                            <div class="form-group" style="display: none;">
+                                <label>Nivel de Privilegios</label>
+                                <input type="hidden" name="Rol" value="Servicios Escolares">
+                            </div>
+
+                            <div class="form-actions">
+                                <a href="{{ route('servicios.index') }}" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fa-solid fa-rotate"></i> Actualizar Administrador
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        async function promptTokenAndActivate() {
+            return Swal.fire({
+                title: '{{ __("Confirmación de Seguridad") }}',
+                html: `
+                    <div style="text-align: center; padding: 10px;">
+                        <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10504B; margin-bottom: 15px;"></i>
+                            <p style="color: #374151; font-weight: 600; margin-bottom: 5px;">{{ __("Acción Crítica Detectada") }}</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">{{ __("Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.") }}</p>
+                        </div>
+                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: #374151;">{{ __("Token JWT") }}</label>
+                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box;">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '{{ __("Autorizar Cambio") }}',
+                cancelButtonText: '{{ __("Cancelar") }}',
+                confirmButtonColor: '#10504B',
+                cancelButtonColor: '#6b7280',
+                width: '500px',
+                padding: '1.5rem',
+                focusConfirm: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const token = document.getElementById('swal-token').value;
+                    if (!token) {
+                        Swal.showValidationMessage('{{ __("El token es obligatorio") }}');
+                        return false;
+                    }
+                    return fetch("{{ route('jwt.verify') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ token: token })
+                    })
+                    .then(response => {
+                        if (!response.ok) return response.json().then(json => { throw new Error(json.message) });
+                        return response.json();
+                    })
+                    .catch(error => Swal.showValidationMessage(`Error: ${error.message}`));
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(result => result.isConfirmed);
+        }
+
+        document.getElementById('edit-admin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = this;
+
+            const ok = await promptTokenAndActivate();
+            if (ok) {
+                Swal.fire({
+                    title: '{{ __("¡Autorizado!") }}',
+                    text: '{{ __("Procesando actualización...") }}',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    willClose: () => form.submit()
+                });
+            }
+        });
+
+        @if(session('critical_token_required'))
+            document.addEventListener('DOMContentLoaded', async () => {
+                const ok = await promptTokenAndActivate();
+                if (ok) {
+                    Swal.fire({
+                        title: '{{ __("¡Autorizado!") }}',
+                        text: '{{ __("Completando acción anterior...") }}',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        willClose: () => document.getElementById('edit-admin-form').submit()
+                    });
+                }
+            });
+        @endif
+    </script>
+</body>
+</html>

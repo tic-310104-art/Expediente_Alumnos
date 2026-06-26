@@ -8,7 +8,9 @@
 }
 
 body {
-    background-color: #10504B; /* Tu fondo verde oscuro */
+    background: radial-gradient(1200px 800px at 10% 10%, rgba(20, 184, 166, 0.18), transparent 55%),
+                radial-gradient(900px 600px at 90% 20%, rgba(16, 80, 75, 0.25), transparent 60%),
+                linear-gradient(180deg, #0b3d39, #10504B);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,14 +20,16 @@ body {
 
 /* --- CONTENEDOR PRINCIPAL --- */
 .container {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.96);
     padding: 50px 40px 40px 40px; /* Padding superior extra para el logo */
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
     width: 100%; 
     max-width: 400px;
     position: relative; /* Crucial para el logo flotante */
     margin-top: 50px; /* Espacio superior para que el logo no se corte */
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
 }
 
 /* --- LOGO FLOTANTE --- */
@@ -57,7 +61,8 @@ h2 {
     margin-top: 10px; /* Ajustado por el logo */
     margin-bottom: 35px;
     font-weight: 600; 
-    color: #111; 
+    color: #0f172a; 
+    letter-spacing: 0.01em;
 }
 
 /* --- CAMPOS DE TEXTO --- */
@@ -74,11 +79,12 @@ h2 {
     border-radius: 8px;
     background: transparent;
     outline: none; 
-    transition: border-color 0.3s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .input-group input:focus { 
-    border-color: #111; 
+    border-color: #10504B; 
+    box-shadow: 0 0 0 4px rgba(16, 80, 75, 0.18);
 }
 
 /* Efecto Etiqueta Flotante */
@@ -99,7 +105,7 @@ h2 {
 .input-group input:not(:placeholder-shown) ~ label {
     top: 0; 
     font-size: 12px; 
-    color: #111; 
+    color: #10504B; 
     font-weight: 600;
 }
 
@@ -107,23 +113,26 @@ h2 {
 .btn {
     width: 100%; 
     padding: 14px; 
-    background: #5FAF3F; /* Botón oscuro */
+    background: #10504B;
     color: white;
     border: none; 
     border-radius: 8px; 
     font-size: 16px; 
     cursor: pointer;
     font-weight: 600; 
-    transition: background 0.3s, transform 0.1s;
+    transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
     margin-top: 10px;
+    box-shadow: 0 12px 24px rgba(16, 80, 75, 0.22);
 }
 
 .btn:hover { 
-    background: #80b06d; /* Color hover personalizado */
+    background: #18736c;
+    transform: translateY(-1px);
+    box-shadow: 0 18px 40px rgba(16, 80, 75, 0.28);
 }
 
 .btn:active {
-    transform: scale(0.98);
+    transform: translateY(0);
 }
 
 /* --- TEXTO INFERIOR --- */
@@ -134,12 +143,50 @@ h2 {
     color: #777; 
 }
 .toggle-text a { 
-    color: #111; 
+    color: #10504B; 
     font-weight: 600; 
     text-decoration: none; 
     transition: color 0.3s;
 }
 .toggle-text a:hover { 
     text-decoration: underline; 
-    color: #a17171; /* Color hover en el enlace */
+    color: #18736c;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #e2e8f0;
+        background: radial-gradient(1200px 800px at 10% 10%, rgba(20, 184, 166, 0.14), transparent 55%),
+                    radial-gradient(900px 600px at 90% 20%, rgba(148, 163, 184, 0.12), transparent 60%),
+                    linear-gradient(180deg, #020617, #0f172a);
+    }
+
+    .container {
+        background: rgba(15, 23, 42, 0.72);
+        border-color: rgba(51, 65, 85, 0.8);
+    }
+
+    .logo-container {
+        background-color: rgba(15, 23, 42, 0.9);
+        border-color: rgba(51, 65, 85, 0.8);
+    }
+
+    h2 {
+        color: #f1f5f9;
+    }
+
+    .input-group label {
+        background: rgba(15, 23, 42, 0.72);
+        color: rgba(148, 163, 184, 0.9);
+    }
+
+    .input-group input {
+        border-color: rgba(51, 65, 85, 0.9);
+        color: #f1f5f9;
+        background: rgba(2, 6, 23, 0.18);
+    }
+
+    .toggle-text {
+        color: rgba(148, 163, 184, 0.95);
+    }
 }
