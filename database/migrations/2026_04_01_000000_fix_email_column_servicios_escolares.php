@@ -62,7 +62,7 @@ return new class extends Migration
         
         // Caso 4: Si ninguna existe, crear 'Correo'
         if (!Schema::hasColumn($tableName, 'Correo') && !Schema::hasColumn($tableName, 'Email')) {
-            $this->command->info("Ninguna columna existe. Creando 'Correo'...");
+           info("Ninguna columna existe. Creando 'Correo'...");
             
             Schema::table($tableName, function (Blueprint $table) {
                 $table->string('Correo')->nullable()->after('Clave_Trabajador');
