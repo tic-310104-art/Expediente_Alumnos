@@ -129,14 +129,11 @@
         <main class="main-content">
             <header class="student-header">
                 <div class="student-profile">
-                    <div class="profile-img-container" onclick="document.getElementById('profile-upload').click()">
+                    <div class="profile-img-container" ondblclick="document.getElementById('profile-upload').click()">
                         @php
                             $fotoUrl = $tutor->foto_url ?? "https://ui-avatars.com/api/?name=" . urlencode($tutor->Nombre . '+' . $tutor->Apellido) . "&background=10504B&color=fff&size=100";
                         @endphp
                         <img src="{{ $fotoUrl }}" alt="{{ __('Foto del tutor') }}" class="profile-img" id="profile-display">
-                        <div class="change-photo-overlay">
-                            <i class="fa-solid fa-camera"></i>
-                        </div>
                         <input type="file" id="profile-upload" style="display: none;" accept="image/*">
                     </div>
                     <div class="student-info">
@@ -196,57 +193,391 @@
                     }
                 </style>
 
-                <div class="card full-width">
-                    <h3><i class="fa-solid fa-calendar-days"></i> {{ __('Calendario de Tutorías') }}</h3>
-                    <div id='calendar' style="padding: 10px; background: #fff; border-radius: 8px;"></div>
-                </div>
+                @if($tutor->grupos->count() > 0)
+                @foreach($tutor->grupos as $index => $grupo)
+                <div class="card full-width" style="margin-bottom: 20px;">
+                    <div class="card-collapsible-header" onclick="toggleCardCollapse(this)">
+                        <h3><i class="fa-solid fa-layer-group"></i> {{ $grupo->carrera->Carrera ?? 'N/A' }} - {{ $grupo->Grupo }} ({{ $grupo->alumnos->count() }} {{ __('alumnos') }})</h3>
+                        <button class="card-collapsible-toggle" type="button" title="{{ __('Minimizar') }}">
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                    </div>
+                    <div class="card-collapsible-body">
+                        @php
+                            $capacidad = $grupo->Cantidad_Alumnos ?? $grupo->alumnos->count();
+                            $ocupados = $grupo->alumnos->count();
+                            $disponibles = max($capacidad - $ocupados, 0);
+                            $denominador = max($capacidad, 1);
 
-                <div class="card full-width">
-                    <h3><i class="fa-solid fa-list-ul"></i> Lista de Alumnos Asignados</h3>
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Matrícula</th>
-                                    <th>Nombre del Alumno</th>
-                                    <th>Cuatrimestre</th>
-                                    <th>Estatus</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($tutor->alumnos as $alumno)
-                                <tr>
-                                    <td><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" style="color:#2b7a78;font-weight:bold;">{{ $alumno->Matricula }}</a></td>
-                                    <td>{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
-                                    <td>{{ $alumno->Cuatrimestre }}</td>
+                            $rangosDef = [
+                                ['label' => '< 8', 'min' => 0, 'max' => 8, 'color' => '#dc2626'],
+                                ['label' => '8-8.5', 'min' => 8, 'max' => 8.5, 'color' => '#f59e0b'],
+                                ['label' => '8.5-9', 'min' => 8.5, 'max' => 9, 'color' => '#16a34a'],
+                                ['label' => '9-9.5', 'min' => 9, 'max' => 9.5, 'color' => '#059669'],
+                                ['label' => '9.5-10', 'min' => 9.5, 'max' => 10, 'color' => '#0d9488'],
+                            ];
+                            $distribucion = collect($rangosDef)->map(function($r) use ($grupo) {
+                                $r['count'] = $grupo->alumnos->filter(function($a) use ($r) {
+                                    $p = $a->promedio;
+                                    return $p > 0 && $p >= $r['min'] && $p < $r['max'];
+                                })->count();
+                                return $r;
+                            });
+                            $sinDatos = $grupo->alumnos->filter(function($a) { return $a->promedio == 0; })->count();
+                        @endphp
+
+                        <div class="enhanced-chart">
+                            <div class="enhanced-chart-header" onclick="toggleChart(this)">
+                                <div class="enhanced-chart-capacity">
+                                    <span><i class="fa-solid fa-users"></i> <strong>{{ __('Cupo') }}:</strong> {{ $capacidad }}</span>
+                                    <span><strong>{{ __('Asignados') }}:</strong> {{ $ocupados }}</span>
+                                    @if($disponibles > 0)
+                                    <span style="color: var(--text-muted);"><strong>{{ __('Disponibles') }}:</strong> {{ $disponibles }}</span>
+                                    @endif
+                                </div>
+                                <button class="chart-toggle" type="button" title="{{ __('Minimizar gráfica') }}">
+                                    <i class="fa-solid fa-chevron-up"></i>
+                                </button>
+                            </div>
+                            <div class="enhanced-chart-body">
+                                <div class="enhanced-chart-bars">
+                                    @foreach($distribucion as $r)
+                                    <div class="enhanced-bar-row" title="{{ $r['label'] }}: {{ $r['count'] }} {{ __('alumno(s)') }}">
+                                        <span class="enhanced-bar-label">{{ $r['label'] }}</span>
+                                        <div class="enhanced-bar-track">
+                                            <div class="enhanced-bar-fill" style="width: {{ ($r['count'] / $denominador) * 100 }}%; background: {{ $r['color'] }};"></div>
+                                        </div>
+                                        <span class="enhanced-bar-value">{{ $r['count'] }}</span>
+                                    </div>
+                                    @endforeach
+                                    @if($disponibles > 0)
+                                    <div class="enhanced-bar-row" title="{{ $disponibles }} {{ __('disponible(s)') }}">
+                                        <span class="enhanced-bar-label">{{ __('Vac.') }}</span>
+                                        <div class="enhanced-bar-track">
+                                            <div class="enhanced-bar-fill" style="width: {{ ($disponibles / $denominador) * 100 }}%; background: #e2e8f0;"></div>
+                                        </div>
+                                        <span class="enhanced-bar-value" style="color: var(--text-muted);">{{ $disponibles }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                                @if($sinDatos > 0)
+                                <div class="enhanced-chart-footer">
+                                    <i class="fa-solid fa-circle-exclamation"></i> {{ $sinDatos }} {{ __('sin calificaciones') }}
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Matrícula') }}</th>
+                                        <th>{{ __('Nombre Completo') }}</th>
+                                        <th>{{ __('Correo') }}</th>
+                                        <th>{{ __('Cuatrimestre') }}</th>
+                                        <th>{{ __('Promedio') }}</th>
+                                        <th>{{ __('Estatus') }}</th>
+                                        <th>{{ __('Acciones') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($grupo->alumnos as $alumno)
                                     @php
+                                        $promedio = $alumno->promedio;
                                         $estatus = strtolower((string) ($alumno->Estatus ?? 'activo'));
                                         $estatusLabel = $estatus === 'baja' ? 'Baja' : ($estatus === 'riesgo' ? 'En riesgo' : 'Activo');
                                         $badgeStyle = $estatus === 'baja'
                                             ? 'background:#fee2e2;color:#991b1b;'
                                             : ($estatus === 'riesgo' ? 'background:#ffedd5;color:#9a3412;' : 'background:#d1fae5;color:#065f46;');
+                                        $promColor = $promedio > 0 ? ($promedio < 8 ? '#dc2626' : ($promedio < 8.5 ? '#f59e0b' : ($promedio < 9.5 ? '#15803d' : '#059669'))) : '#4b5563';
                                     @endphp
-                                    <td><span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;border:1px solid rgba(0,0,0,0.06);{{ $badgeStyle }}">{{ __($estatusLabel) }}</span></td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" style="text-align: center;">No tiene alumnos asignados.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                    <tr>
+                                        <td><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" style="color:#2b7a78;font-weight:bold;">{{ $alumno->Matricula }}</a></td>
+                                        <td>{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
+                                        <td>{{ $alumno->Correo_inst }}</td>
+                                        <td>{{ $alumno->Cuatrimestre }}</td>
+                                        <td>
+                                            <span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;color:#fff;background:{{ $promColor }};">
+                                                {{ $promedio > 0 ? number_format($promedio, 1) : 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <td><span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;border:1px solid rgba(0,0,0,0.06);{{ $badgeStyle }}">{{ __($estatusLabel) }}</span></td>
+                                        <td>
+                                            <div class="acciones-group">
+                                                <a href="{{ route('tutor.alumnos.calificaciones', ['id' => $tutor->idTutores, 'alumnoId' => $alumno->idAlumnos]) }}" class="btn-accion" style="background:#dc2626;" title="{{ __('Asignar Calificaciones') }}">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
+                                                <a href="{{ route('historial.show', $alumno->idAlumnos) }}" class="btn-accion" style="background:#10504B;" title="{{ __('Ver Calificaciones') }}">
+                                                    <i class="fa-solid fa-graduation-cap"></i>
+                                                </a>
+                                                <a href="{{ route('tutor.citas', ['id' => $tutor->idTutores, 'alumno_id' => $alumno->idAlumnos]) }}" class="btn-accion" style="background:#2b7a78;" title="{{ __('Agendar Tutoría') }}">
+                                                    <i class="fa-solid fa-calendar-plus"></i>
+                                                </a>
+                                                <a href="{{ route('tutor.psicologia', ['id' => $tutor->idTutores, 'alumno_id' => $alumno->idAlumnos]) }}" class="btn-accion" style="background:#6366f1;" title="{{ __('Cita Psicología') }}">
+                                                    <i class="fa-solid fa-brain"></i>
+                                                </a>
+                                                <a href="{{ route('tutor.asesorias', $tutor->idTutores) }}" class="btn-accion" style="background:#f59e0b;" title="{{ __('Agendar Asesoría') }}">
+                                                    <i class="fa-solid fa-chalkboard-user"></i>
+                                                </a>
+                                                <a href="{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}" target="_blank" class="btn-accion" style="background:#0d9488;" title="{{ __('Descargar Resumen PDF') }}">
+                                                    <i class="fa-solid fa-file-pdf"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">{{ __('No hay alumnos en este grupo.') }}</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+                @endforeach
+                @else
+                <div class="card full-width">
+                    <div style="width: 100%; text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 10px; display: block;"></i>
+                        {{ __('No tiene grupos asignados.') }}
+                    </div>
+                </div>
+                @endif
             </div>
         </main>
     </div>
+
+    {{-- Modal del Calendario --}}
+    <div id="calendar-modal" class="calendar-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="calendar-modal-content" style="background: var(--card-bg); border-radius: 16px; width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 25px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <button id="calendar-modal-close" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); z-index: 10;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 style="margin-bottom: 15px; color: var(--text-main);"><i class="fa-solid fa-calendar-days"></i> {{ __('Calendario de Tutorías') }}</h3>
+            <div id='calendar' style="padding: 10px; background: #fff; border-radius: 8px;"></div>
+        </div>
+    </div>
+
+    <style>
+        .calendar-modal-overlay {
+            animation: fadeIn 0.2s ease;
+        }
+        .calendar-modal-content {
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        body.dark-mode .calendar-modal-content {
+            background: #1e293b;
+        }
+
+        .card-collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+        .card-collapsible-header h3 {
+            margin: 0;
+        }
+        .card-collapsible-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .card-collapsible-toggle:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border-color: var(--primary-color);
+        }
+        .card-collapsible-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .card-collapsible-toggle.collapsed i {
+            transform: rotate(180deg);
+        }
+        .card-collapsible-body {
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+            max-height: 5000px;
+            opacity: 1;
+            padding-top: 8px;
+        }
+        .card-collapsible-body.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+        }
+
+        .enhanced-chart {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 14px;
+        }
+        .enhanced-chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .enhanced-chart-capacity {
+            display: flex;
+            gap: 20px;
+            font-size: 0.82rem;
+            color: var(--text-main);
+        }
+        .enhanced-chart-capacity i {
+            margin-right: 4px;
+            color: var(--primary-color);
+        }
+        .chart-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .chart-toggle:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border-color: var(--primary-color);
+        }
+        .chart-toggle.collapsed i {
+            transform: rotate(180deg);
+        }
+        .chart-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .enhanced-chart-body {
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.3s ease;
+            max-height: 600px;
+            opacity: 1;
+            padding-top: 14px;
+        }
+        .enhanced-chart-body.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+        }
+        .enhanced-chart-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .enhanced-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .enhanced-bar-label {
+            width: 48px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .enhanced-bar-track {
+            flex: 1;
+            height: 28px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .dark-mode .enhanced-bar-track {
+            background: rgba(255,255,255,0.07);
+        }
+        .enhanced-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.8s ease;
+            min-width: 4px;
+        }
+        .enhanced-bar-value {
+            width: 24px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .enhanced-chart-footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .enhanced-chart-footer i {
+            color: #f59e0b;
+        }
+
+        .acciones-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: nowrap;
+        }
+        .btn-accion {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-accion:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .btn-accion i {
+            font-size: 13px;
+        }
+    </style>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar Calendario Primero para asegurar su carga
-            var calendarEl = document.getElementById('calendar');
-            if (calendarEl) {
-                var calendar = new FullCalendar.Calendar(calendarEl, {
+            var calendarInstance = null;
+
+            function initCalendar() {
+                if (calendarInstance) return;
+                var calendarEl = document.getElementById('calendar');
+                if (!calendarEl) return;
+                calendarInstance = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
                     locale: 'es',
                     height: 'auto',
@@ -276,8 +607,67 @@
                         });
                     }
                 });
-                calendar.render();
+                calendarInstance.render();
             }
+
+            // Toggle calendario desde el icono en sidebar
+            const calendarToggle = document.getElementById('calendar-toggle');
+            const calendarModal = document.getElementById('calendar-modal');
+            const calendarClose = document.getElementById('calendar-modal-close');
+
+            if (calendarToggle && calendarModal) {
+                calendarToggle.addEventListener('click', function() {
+                    calendarModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    initCalendar();
+                    setTimeout(function() {
+                        if (calendarInstance) calendarInstance.updateSize();
+                    }, 300);
+                });
+
+                function closeCalendar() {
+                    calendarModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+
+                if (calendarClose) {
+                    calendarClose.addEventListener('click', closeCalendar);
+                }
+
+                calendarModal.addEventListener('click', function(e) {
+                    if (e.target === calendarModal) closeCalendar();
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && calendarModal.style.display === 'flex') {
+                        closeCalendar();
+                    }
+                });
+            }
+
+            // Toggle colapsar/expandir gráfica
+            window.toggleChart = function(header) {
+                var chart = header.closest('.enhanced-chart');
+                var body = chart.querySelector('.enhanced-chart-body');
+                var toggle = chart.querySelector('.chart-toggle');
+                body.classList.toggle('collapsed');
+                toggle.classList.toggle('collapsed');
+                toggle.title = body.classList.contains('collapsed')
+                    ? '{{ __("Expandir gráfica") }}'
+                    : '{{ __("Minimizar gráfica") }}';
+            };
+
+            // Toggle colapsar/expandir todo el card de Grupos Asignados
+            window.toggleCardCollapse = function(header) {
+                var card = header.closest('.card');
+                var body = card.querySelector('.card-collapsible-body');
+                var toggle = card.querySelector('.card-collapsible-toggle');
+                body.classList.toggle('collapsed');
+                toggle.classList.toggle('collapsed');
+                toggle.title = body.classList.contains('collapsed')
+                    ? '{{ __("Expandir") }}'
+                    : '{{ __("Minimizar") }}';
+            };
 
             // Modal de alumnos en riesgo
             const riesgoBox = document.getElementById('riesgo-box');

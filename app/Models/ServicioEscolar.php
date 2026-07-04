@@ -42,7 +42,12 @@ class ServicioEscolar extends Model
         $table = $query->getModel()->getTable();
 
         $hasCorreo = \Illuminate\Support\Facades\Schema::hasColumn($table, 'Correo');
+        $hasCorreoInst = \Illuminate\Support\Facades\Schema::hasColumn($table, 'Correo_inst');
         $hasEmail = \Illuminate\Support\Facades\Schema::hasColumn($table, 'Email');
+
+        if ($hasCorreoInst) {
+            return $query->where('Correo_inst', $email);
+        }
 
         if ($hasCorreo && $hasEmail) {
             return $query->where('Correo', $email)->orWhere('Email', $email);
@@ -56,7 +61,6 @@ class ServicioEscolar extends Model
             return $query->where('Email', $email);
         }
 
-        // Si no existen ambas columnas, no devolvemos registros.
         return $query->whereRaw('0=1');
     }
 }

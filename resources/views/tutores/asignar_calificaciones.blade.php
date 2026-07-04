@@ -34,7 +34,7 @@
                 <div class="card full-width">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="margin: 0;"><i class="fa-solid fa-list-check"></i> {{ __('Carga Académica del Grupo') }}: {{ $alumno->grupo->Grupo ?? __('Sin Grupo') }}</h3>
-                        <a href="{{ route('tutor.alumnos', Auth::user()->tutor->idTutores) }}" class="btn-secondary" style="text-decoration: none; font-size: 14px;">
+                        <a href="{{ route('tutor.dashboard', Auth::user()->tutor->idTutores) }}" class="btn-secondary" style="text-decoration: none; font-size: 14px;">
                             <i class="fa-solid fa-arrow-left"></i> {{ __('Volver') }}
                         </a>
                     </div>

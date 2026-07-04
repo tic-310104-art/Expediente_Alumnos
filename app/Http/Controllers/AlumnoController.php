@@ -278,7 +278,7 @@ class AlumnoController extends Controller
             if ($id === null) {
                 return ($user->role === 'admin') 
                     ? redirect()->route('alumnos.index') 
-                    : redirect()->route('tutor.alumnos', ['id' => $user->tutor->idTutores]);
+                    : redirect()->route('tutor.dashboard', ['id' => $user->tutor->idTutores]);
             }
             $alumno = Alumno::with(['historialAcademico', 'grupo', 'tutor', 'carreras'])->where('idAlumnos', $id)->firstOrFail();
             return view('alumnos.alumno', compact('alumno'));

@@ -111,7 +111,6 @@ Route::middleware('auth')->group(function () {
 
             // Rutas con {id} protegidas: solo el tutor propietario puede acceder
             Route::middleware('ownership:tutores,idTutores')->group(function () {
-                Route::get('/{id}/alumnos',    [TutorController::class, 'misAlumnos'])->name('alumnos');
                 Route::get('/{id}/citas',      [TutorController::class, 'misCitas'])->name('citas');
                 Route::get('/{id}/psicologia', [TutorController::class, 'misPsicologias'])->name('psicologia');
                 Route::get('/{id}/asesorias',  [TutorController::class, 'misAsesorias'])->name('asesorias');

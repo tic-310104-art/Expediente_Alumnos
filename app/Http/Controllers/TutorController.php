@@ -162,7 +162,7 @@ class TutorController extends Controller
 
         // Si es admin, puede ver el dashboard de cualquier tutor
         if ($user->role === 'admin') {
-            $tutor = Tutor::with(['citasTutorias.alumno', 'alumnos'])->where('idTutores', $id)->firstOrFail();
+            $tutor = Tutor::with(['citasTutorias.alumno', 'alumnos', 'grupos.carrera', 'grupos.alumnos.historialAcademico'])->where('idTutores', $id)->firstOrFail();
             $this->hydrateAlumnosAsignados($tutor);
             
             $citasCalendar = $tutor->citasTutorias->flatMap(function($cita) {
@@ -210,7 +210,7 @@ class TutorController extends Controller
             }
             
             $tutorId = $ownId;
-            $tutor = Tutor::with(['citasTutorias.alumno', 'alumnos'])->where('idTutores', $tutorId)->firstOrFail();
+            $tutor = Tutor::with(['citasTutorias.alumno', 'alumnos', 'grupos.carrera', 'grupos.alumnos.historialAcademico'])->where('idTutores', $tutorId)->firstOrFail();
             $this->hydrateAlumnosAsignados($tutor);
 
             $citasCalendar = $tutor->citasTutorias->flatMap(function($cita) {
@@ -251,13 +251,6 @@ class TutorController extends Controller
         }
 
         return redirect()->route('login');
-    }
-
-    public function misAlumnos($id)
-    {
-        $tutor = Tutor::with('alumnos.grupo')->findOrFail($id);
-        $this->hydrateAlumnosAsignados($tutor);
-        return view('tutores.tutor_alumnos', compact('tutor'));
     }
 
     public function misCitas(Request $request, $id)

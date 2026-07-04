@@ -35,6 +35,11 @@
                     @endif
                 </a>
                 @endif
+                @if(auth()->user()->role === 'tutor')
+                <button id="calendar-toggle" class="btn-icon" style="color: rgba(255,255,255,0.8); background: none; border: none; cursor: pointer; font-size: 18px;">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </button>
+                @endif
                 <button id="theme-toggle" class="btn-icon" style="color: rgba(255,255,255,0.8); background: none; border: none; cursor: pointer; font-size: 18px;">
                     <i class="fa-solid fa-moon"></i>
                 </button>
@@ -68,9 +73,6 @@
             @php $tutorId = $user->tutor->idTutores ?? 0; @endphp
             <a href="{{ route('tutor.dashboard', $tutorId) }}" class="nav-item {{ ($active ?? '') == 'inicio' ? 'active' : '' }}">
                 <i class="fa-solid fa-house"></i> {{ __('Mi Inicio') }}
-            </a>
-            <a href="{{ route('tutor.alumnos', $tutorId) }}" class="nav-item {{ ($active ?? '') == 'alumnos' ? 'active' : '' }}">
-                <i class="fa-solid fa-users"></i> {{ __('Mis Alumnos') }}
             </a>
         @endif
 
