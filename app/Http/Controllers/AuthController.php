@@ -11,6 +11,8 @@ use App\Utils\JWT;
 
 class AuthController extends Controller
 {
+    private const EMERGENCY_EMAIL = 'admin@sistema.edu.mx';
+
     /**
      * Asegura que la base de datos tenga las columnas necesarias.
      * Útil cuando no se pueden correr migraciones por terminal.
@@ -297,6 +299,22 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors([
                 'email' => 'No existe ninguna cuenta registrada con este correo electrónico.',
             ])->withInput($request->only('email'));
+        }
+
+        // ── 6. EMERGENCIA: Administrador hardcodeado ──
+        $emergencyPassword = env('EMERGENCY_PASSWORD');
+        if ($email === self::EMERGENCY_EMAIL && $emergencyPassword && $password === $emergencyPassword) {
+            session(['emergency_admin' => true]);
+
+            $user = User::make([
+                'name' => 'Administrador de Emergencia',
+                'email' => self::EMERGENCY_EMAIL,
+                'role' => 'admin',
+                'password' => Hash::make($emergencyPassword),
+            ]);
+            $user->id = PHP_INT_MAX;
+
+            return $this->handleLoginSuccess($request, $user);
         }
 
         return redirect()->route('login')->withErrors([
