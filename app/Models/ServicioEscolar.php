@@ -45,22 +45,21 @@ class ServicioEscolar extends Model
         $hasCorreoInst = \Illuminate\Support\Facades\Schema::hasColumn($table, 'Correo_inst');
         $hasEmail = \Illuminate\Support\Facades\Schema::hasColumn($table, 'Email');
 
-        if ($hasCorreoInst) {
-            return $query->where('Correo_inst', $email);
-        }
+        $query->where(function ($q) use ($email, $hasCorreo, $hasCorreoInst, $hasEmail) {
+            if ($hasCorreoInst) {
+                $q->orWhere('Correo_inst', $email);
+            }
+            if ($hasCorreo) {
+                $q->orWhere('Correo', $email);
+            }
+            if ($hasEmail) {
+                $q->orWhere('Email', $email);
+            }
+            if (!$hasCorreoInst && !$hasCorreo && !$hasEmail) {
+                $q->whereRaw('0=1');
+            }
+        });
 
-        if ($hasCorreo && $hasEmail) {
-            return $query->where('Correo', $email)->orWhere('Email', $email);
-        }
-
-        if ($hasCorreo) {
-            return $query->where('Correo', $email);
-        }
-
-        if ($hasEmail) {
-            return $query->where('Email', $email);
-        }
-
-        return $query->whereRaw('0=1');
+        return $query;
     }
 }

@@ -213,8 +213,24 @@ class AuthController extends Controller
         // se considera cuenta inexistente para evitar redirecciones a rutas inválidas.
         if (\App\Models\User::where('email', $email)->exists()) {
             $emailExistsAdmin  = \App\Models\ServicioEscolar::byEmail($email)->exists();
-            $emailExistsTutor  = \App\Models\Tutor::where('Correo_inst', $email)->exists();
-            $emailExistsAlumno = \App\Models\Alumno::where('Correo_inst', $email)->exists();
+
+            $emailExistsTutorQuery = \App\Models\Tutor::query()->whereRaw('0=1');
+            if (\Illuminate\Support\Facades\Schema::hasColumn('tutores', 'Correo_inst')) {
+                $emailExistsTutorQuery->orWhere('Correo_inst', $email);
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('tutores', 'Correo')) {
+                $emailExistsTutorQuery->orWhere('Correo', $email);
+            }
+            $emailExistsTutor = $emailExistsTutorQuery->exists();
+
+            $emailExistsAlumnoQuery = \App\Models\Alumno::query()->whereRaw('0=1');
+            if (\Illuminate\Support\Facades\Schema::hasColumn('alumnos', 'Correo_inst')) {
+                $emailExistsAlumnoQuery->orWhere('Correo_inst', $email);
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('alumnos', 'Correo')) {
+                $emailExistsAlumnoQuery->orWhere('Correo', $email);
+            }
+            $emailExistsAlumno = $emailExistsAlumnoQuery->exists();
 
             if (!$emailExistsAdmin && !$emailExistsTutor && !$emailExistsAlumno) {
                 return redirect()->route('login')->withErrors([
