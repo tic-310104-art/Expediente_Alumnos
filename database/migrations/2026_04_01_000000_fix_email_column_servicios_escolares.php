@@ -21,13 +21,13 @@ return new class extends Migration
         
         // Caso 1: Si existe 'Correo' pero no 'Email', dejar como está
         if (Schema::hasColumn($tableName, 'Correo') && !Schema::hasColumn($tableName, 'Email')) {
-            $this->info("Columna 'Correo' existe, 'Email' no existe. Manteniendo estructura actual.");
+            info("Columna 'Correo' existe, 'Email' no existe. Manteniendo estructura actual.");
             return;
         }
         
         // Caso 2: Si existe 'Email' pero no 'Correo', renombrar 'Email' a 'Correo'
         if (Schema::hasColumn($tableName, 'Email') && !Schema::hasColumn($tableName, 'Correo')) {
-            $this->info("Renombrando columna 'Email' a 'Correo' en servicios_escolares...");
+            info("Renombrando columna 'Email' a 'Correo' en servicios_escolares...");
             
             // Obtener los datos antes de renombrar
             $emails = DB::table($tableName)->pluck('Email', 'idServicios_Escolares');
@@ -37,13 +37,13 @@ return new class extends Migration
                 $table->renameColumn('Email', 'Correo');
             });
             
-            $this->info("Columna renombrada exitosamente.");
+            info("Columna renombrada exitosamente.");
             return;
         }
         
         // Caso 3: Si ambas existen, mantener 'Correo' y eliminar 'Email'
         if (Schema::hasColumn($tableName, 'Correo') && Schema::hasColumn($tableName, 'Email')) {
-            $this->info("Ambas columnas existen. Eliminando 'Email' y manteniendo 'Correo'...");
+            info("Ambas columnas existen. Eliminando 'Email' y manteniendo 'Correo'...");
             
             // Migrar datos de Email a Correo si Correo está vacío
             DB::table($tableName)
@@ -56,19 +56,20 @@ return new class extends Migration
                 $table->dropColumn('Email');
             });
             
-            $this->info("Columna 'Email' eliminada, datos migrados a 'Correo'.");
+            info("Columna 'Email' eliminada, datos migrados a 'Correo'.");
             return;
         }
         
         // Caso 4: Si ninguna existe, crear 'Correo'
         if (!Schema::hasColumn($tableName, 'Correo') && !Schema::hasColumn($tableName, 'Email')) {
-           info("Ninguna columna existe. Creando 'Correo'...");
+            info("Ninguna columna existe. Creando 'Correo'...");
             
+            // Crear la columna
             Schema::table($tableName, function (Blueprint $table) {
                 $table->string('Correo')->nullable()->after('Clave_Trabajador');
             });
             
-            $this->info("Columna 'Correo' creada.");
+            info("Columna 'Correo' creada.");
             return;
         }
     }
@@ -79,6 +80,6 @@ return new class extends Migration
     public function down(): void
     {
         // En caso de rollback, no hacer nada para evitar perder datos
-        $this->info("Rollback: No se realizarán cambios para proteger los datos.");
+        info("Rollback: No se realizarán cambios para proteger los datos.");
     }
 };
