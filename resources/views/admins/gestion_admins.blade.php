@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Administradores | UniAdmin</title>
     <link rel="stylesheet" href="{{ asset('expedienteG.css') }}">
-    <link rel="shortcut icon" href="logo-utn.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">

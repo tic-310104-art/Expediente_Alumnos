@@ -6,7 +6,7 @@
     <title>{{ __('Gestión de Tutores') }}</title>
     <link rel="stylesheet" href="{{ asset('expedienteG.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="shortcut icon" href="logo-utn.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
 </head>
 <body>
 
