@@ -54,7 +54,8 @@ class CarreraController extends Controller
     public function update(Request $request, $id)
     {
         $carrera = Carrera::findOrFail($id);
-        $carrera->update($request->all());
+        $request->validate(['Nombre' => 'required|string|max:255']);
+        $carrera->update($request->only(['Nombre']));
         return redirect()->route('carreras.index')->with('success', __('Carrera actualizada correctamente.'));
     }
 

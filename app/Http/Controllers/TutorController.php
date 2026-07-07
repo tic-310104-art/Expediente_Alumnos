@@ -95,8 +95,7 @@ class TutorController extends Controller
 
     public function show($id)
     {
-        $tutor = Tutor::findOrFail($id);
-    return view('admins.show_tutor', compact('tutor'));
+        return redirect()->route('tutores.index');
     }
 
     public function edit($id)

@@ -8,7 +8,7 @@ class BackupService
 {
     public function runMysqlDump(string $scheduledDate, string $scheduledTime): array
     {
-        if (!function_exists('exec')) {
+        if (!function_exists('exec') || !function_exists('shell_exec')) {
             return [
                 'success' => false,
                 'message' => 'La función exec() está deshabilitada en PHP. No se puede ejecutar mysqldump.',

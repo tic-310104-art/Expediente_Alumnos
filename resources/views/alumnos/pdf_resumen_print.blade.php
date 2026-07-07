@@ -216,7 +216,7 @@
         </div>
         <div class="info-item">
             <label>Tutor</label>
-            <span>{{ $alumno->tutor->Nombre ?? 'N/A' }} {{ $alumno->tutor->Apellido ?? '' }}</span>
+            <span>{{ optional($alumno->tutor)->Nombre ?? 'N/A' }} {{ optional($alumno->tutor)->Apellido ?? '' }}</span>
         </div>
     </div>
 
@@ -266,7 +266,7 @@
                 @foreach($alumno->citasTutoria as $cita)
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($cita->Fecha)->format('d/m/Y') }}</td>
-                    <td>{{ $cita->Asunto ?: $cita->Motivo }}</td>
+                    <td>{{ $cita->Motivo }}</td>
                     <td>Tutoría Individual</td>
                 </tr>
                 @endforeach
@@ -326,7 +326,7 @@
     <div class="signature-section">
         <div class="signature-box">
             <p>___________________________</p>
-            <p>{{ $alumno->tutor->Nombre ?? 'TUTOR' }} {{ $alumno->tutor->Apellido ?? '' }}</p>
+            <p>{{ optional($alumno->tutor)->Nombre ?? 'TUTOR' }} {{ optional($alumno->tutor)->Apellido ?? '' }}</p>
             <p>FIRMA DEL TUTOR</p>
         </div>
         <div class="signature-box">

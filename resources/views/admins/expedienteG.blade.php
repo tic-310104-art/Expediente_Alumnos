@@ -333,7 +333,7 @@
                 try { result = JSON.parse(raw); } catch (e) { result = null; }
 
                 if (!result || !response.ok || !result.success) {
-                    throw new Error((result && result.message) ? result.message : @json(__('El servidor devolvió una respuesta inesperada. Revisa credenciales de Cloudinary / sesión.')));
+                    throw new Error((result && result.message) ? result.message : @json(__('El servidor devolvió una respuesta inesperada. Revisa tu sesión e intenta de nuevo.')));
                 }
 
                 if (result.success) {

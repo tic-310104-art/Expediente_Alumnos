@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CitaTutoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CitaTutoriaController extends Controller
 {
@@ -14,7 +15,18 @@ class CitaTutoriaController extends Controller
 
     public function store(Request $request)
     {
-        CitaTutoria::create($request->all());
+        $request->validate([
+            'Fecha' => 'required|date',
+            'Motivo' => 'required|string|max:500',
+            'Alumnos_id' => 'required|exists:alumnos,idAlumnos',
+            'Tutores_id' => 'required|exists:tutores,idTutores',
+        ]);
+
+        if (Auth::user()->role === 'tutor' && $request->Tutores_id != Auth::user()->tutor->idTutores) {
+            return redirect()->back()->with('error', __('No tienes permiso para agendar citas para otro tutor.'));
+        }
+
+        CitaTutoria::create($request->only(['Fecha', 'Motivo', 'Alumnos_id', 'Tutores_id']));
         return redirect()->back()->with('success', 'Cita agendada correctamente');
     }
 
@@ -28,7 +40,17 @@ class CitaTutoriaController extends Controller
     public function update(Request $request, $id)
     {
         $cita = CitaTutoria::findOrFail($id);
-        $cita->update($request->all());
+
+        if (Auth::user()->role === 'tutor' && $cita->Tutores_id != Auth::user()->tutor->idTutores) {
+            return redirect()->back()->with('error', __('No tienes permiso para modificar esta cita.'));
+        }
+
+        $request->validate([
+            'Fecha' => 'required|date',
+            'Motivo' => 'required|string|max:500',
+        ]);
+
+        $cita->update($request->only(['Fecha', 'Motivo']));
         return redirect()->route('tutor.citas', $cita->Tutores_id)
             ->with('success', 'Cita reprogramada correctamente.');
     }
@@ -36,6 +58,11 @@ class CitaTutoriaController extends Controller
     public function destroy($id)
     {
         $cita = CitaTutoria::findOrFail($id);
+
+        if (Auth::user()->role === 'tutor' && $cita->Tutores_id != Auth::user()->tutor->idTutores) {
+            return redirect()->back()->with('error', __('No tienes permiso para eliminar esta cita.'));
+        }
+
         $tutorId = $cita->Tutores_id;
         $cita->delete();
 

@@ -132,9 +132,15 @@
                     <div class="profile-img-container" ondblclick="document.getElementById('profile-upload').click()">
                         @php
                             $fotoUrl = $tutor->foto_url ?? "https://ui-avatars.com/api/?name=" . urlencode($tutor->Nombre . '+' . $tutor->Apellido) . "&background=10504B&color=fff&size=100";
+                            $hasFoto = !is_null($tutor->foto_url);
                         @endphp
                         <img src="{{ $fotoUrl }}" alt="{{ __('Foto del tutor') }}" class="profile-img" id="profile-display">
                         <input type="file" id="profile-upload" style="display: none;" accept="image/*">
+                        @if($hasFoto)
+                        <button type="button" id="delete-photo-btn" class="profile-delete-btn" title="{{ __('Eliminar foto') }}">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        @endif
                     </div>
                     <div class="student-info">
                         <h1>{{ $tutor->Nombre }} {{ $tutor->Apellido }}</h1>
@@ -145,27 +151,7 @@
             </header>
 
             <div class="dashboard-grid">
-                <div class="card progress-card" style="flex: 1 1 100%;">
-                    <h3><i class="fa-solid fa-chart-pie"></i> {{ __('Resumen de Tutorados') }}</h3>
-                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                        <div class="stats-container" style="flex: 1; display: flex; gap: 20px; align-items: stretch;">
-                            <div class="stat-box" style="flex: 1;">
-                                <span class="stat-value">{{ $tutor->alumnos->count() }}</span>
-                                <span class="stat-label">{{ __('Alumnos Asignados') }}</span>
-                            </div>
-                            <div class="stat-box" id="riesgo-box" style="flex: 1; border-left: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: all 0.3s ease;">
-                                <span class="stat-value" style="color: #991b1b;">{{ $riesgoCount ?? 0 }}</span>
-                                <span class="stat-label">{{ __('En Riesgo Académico') }} <i class="fa-solid fa-circle-info" style="font-size: 0.8rem; opacity: 0.5;"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <style>
-                    #riesgo-box:hover {
-                        background: rgba(153, 27, 27, 0.05);
-                        transform: translateY(-2px);
-                    }
                     .at-risk-modal-item {
                         display: flex;
                         align-items: center;
@@ -197,7 +183,7 @@
                 @foreach($tutor->grupos as $index => $grupo)
                 <div class="card full-width" style="margin-bottom: 20px;">
                     <div class="card-collapsible-header" onclick="toggleCardCollapse(this)">
-                        <h3><i class="fa-solid fa-layer-group"></i> {{ $grupo->carrera->Carrera ?? 'N/A' }} - {{ $grupo->Grupo }} ({{ $grupo->alumnos->count() }} {{ __('alumnos') }})</h3>
+                        <h3><i class="fa-solid fa-layer-group"></i> {{ $grupo->carrera->Nombre ?? __('Sin carrera') }} - {{ $grupo->Grupo }} ({{ $grupo->alumnos->count() }} {{ __('alumnos') }})</h3>
                         <button class="card-collapsible-toggle" type="button" title="{{ __('Minimizar') }}">
                             <i class="fa-solid fa-chevron-up"></i>
                         </button>
@@ -217,10 +203,20 @@
                                 ['label' => '9.5-10', 'min' => 9.5, 'max' => 10, 'color' => '#0d9488'],
                             ];
                             $distribucion = collect($rangosDef)->map(function($r) use ($grupo) {
-                                $r['count'] = $grupo->alumnos->filter(function($a) use ($r) {
+                                $alumnosEnRango = $grupo->alumnos->filter(function($a) use ($r) {
                                     $p = $a->promedio;
                                     return $p > 0 && $p >= $r['min'] && $p < $r['max'];
-                                })->count();
+                                });
+                                $r['alumnos'] = $alumnosEnRango->map(function($a) {
+                                    return [
+                                        'idAlumnos' => $a->idAlumnos,
+                                        'Nombre' => $a->Nombre,
+                                        'Apellido' => $a->Apellido,
+                                        'Matricula' => $a->Matricula,
+                                        'promedio' => $a->promedio,
+                                    ];
+                                })->values();
+                                $r['count'] = $alumnosEnRango->count();
                                 return $r;
                             });
                             $sinDatos = $grupo->alumnos->filter(function($a) { return $a->promedio == 0; })->count();
@@ -240,23 +236,45 @@
                                 </button>
                             </div>
                             <div class="enhanced-chart-body">
-                                <div class="enhanced-chart-bars">
-                                    @foreach($distribucion as $r)
-                                    <div class="enhanced-bar-row" title="{{ $r['label'] }}: {{ $r['count'] }} {{ __('alumno(s)') }}">
-                                        <span class="enhanced-bar-label">{{ $r['label'] }}</span>
-                                        <div class="enhanced-bar-track">
-                                            <div class="enhanced-bar-fill" style="width: {{ ($r['count'] / $denominador) * 100 }}%; background: {{ $r['color'] }};"></div>
+                                <div class="vbar-container">
+                                    @php
+                                        $tubeData = $distribucion->values()->all();
+                                    @endphp
+                                    @foreach($tubeData as $idx => $tube)
+                                    <div class="vbar-item" onclick="showTubeAlumnos(this)" data-alumnos='{{ json_encode($tube['alumnos']) }}' data-label="{{ $tube['label'] }}" data-color="{{ $tube['color'] }}">
+                                        <div class="vbar-value">{{ $tube['count'] }}</div>
+                                        <div class="vbar-track">
+                                            @if($tube['count'] > 0)
+                                            <div class="vbar-fill" style="height: {{ min(100, ($tube['count'] / $denominador) * 100) }}%; background: {{ $tube['color'] }};"></div>
+                                            @endif
                                         </div>
-                                        <span class="enhanced-bar-value">{{ $r['count'] }}</span>
+                                        <div class="vbar-label">{{ $tube['label'] }}</div>
+                                        <div class="vbar-hover-popup">
+                                            @php $alumnosColl = $tube['alumnos']; $maxHover = 6; @endphp
+                                            @forelse($alumnosColl->take($maxHover) as $a)
+                                            <div class="vbar-hover-item">
+                                                <span class="vbar-hover-name">{{ $a['Nombre'] }} {{ $a['Apellido'] }}</span>
+                                                <span class="vbar-hover-prom" style="color: {{ $a['promedio'] < 8 ? '#dc2626' : ($a['promedio'] < 8.5 ? '#f59e0b' : '#059669') }}">{{ number_format($a['promedio'], 1) }}</span>
+                                            </div>
+                                            @empty
+                                            <div class="vbar-hover-empty">{{ __('Sin alumnos') }}</div>
+                                            @endforelse
+                                            @if($alumnosColl->count() > $maxHover)
+                                            <div class="vbar-hover-more">+{{ $alumnosColl->count() - $maxHover }} {{ __('más') }}</div>
+                                            @endif
+                                        </div>
                                     </div>
                                     @endforeach
                                     @if($disponibles > 0)
-                                    <div class="enhanced-bar-row" title="{{ $disponibles }} {{ __('disponible(s)') }}">
-                                        <span class="enhanced-bar-label">{{ __('Vac.') }}</span>
-                                        <div class="enhanced-bar-track">
-                                            <div class="enhanced-bar-fill" style="width: {{ ($disponibles / $denominador) * 100 }}%; background: #e2e8f0;"></div>
+                                    <div class="vbar-item">
+                                        <div class="vbar-value" style="color: var(--text-muted);">{{ $disponibles }}</div>
+                                        <div class="vbar-track">
+                                            <div class="vbar-fill" style="height: {{ min(100, ($disponibles / $denominador) * 100) }}%; background: #e2e8f0;"></div>
                                         </div>
-                                        <span class="enhanced-bar-value" style="color: var(--text-muted);">{{ $disponibles }}</span>
+                                        <div class="vbar-label">{{ __('Vac.') }}</div>
+                                        <div class="vbar-hover-popup">
+                                            <div class="vbar-hover-empty">{{ __('Espacios disponibles') }}</div>
+                                        </div>
                                     </div>
                                     @endif
                                 </div>
@@ -489,48 +507,129 @@
             opacity: 0;
             padding-top: 0;
         }
-        .enhanced-chart-bars {
+        /* Estilos de gráfica de barras verticales */
+        .vbar-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px 10px;
+            flex-wrap: wrap;
+        }
+        .vbar-item {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-        .enhanced-bar-row {
-            display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+            min-width: 50px;
+            cursor: pointer;
+            position: relative;
         }
-        .enhanced-bar-label {
-            width: 48px;
+        .vbar-item:hover .vbar-fill {
+            filter: brightness(1.1);
+        }
+        .vbar-item:active .vbar-fill {
+            filter: brightness(0.9);
+        }
+        .vbar-value {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-align: center;
+        }
+        .vbar-track {
+            width: 40px;
+            height: 150px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+            position: relative;
+        }
+        .dark-mode .vbar-track {
+            background: rgba(255,255,255,0.07);
+        }
+        .vbar-fill {
+            width: 100%;
+            border-radius: 8px;
+            transition: height 0.8s ease;
+            min-height: 4px;
+        }
+        .vbar-label {
             font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-muted);
-            text-align: right;
-            flex-shrink: 0;
+            text-align: center;
+            margin-top: 2px;
         }
-        .enhanced-bar-track {
-            flex: 1;
-            height: 28px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
+        .vbar-hover-popup {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 10px;
+            min-width: 180px;
+            max-width: 220px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 20;
+            pointer-events: none;
+            margin-bottom: 10px;
         }
-        .dark-mode .enhanced-bar-track {
-            background: rgba(255,255,255,0.07);
+        .vbar-item:hover .vbar-hover-popup {
+            opacity: 1;
+            visibility: visible;
         }
-        .enhanced-bar-fill {
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.8s ease;
-            min-width: 4px;
+        .dark-mode .vbar-hover-popup {
+            background: #1e293b;
+            border-color: #334155;
         }
-        .enhanced-bar-value {
-            width: 24px;
-            font-size: 0.85rem;
-            font-weight: 800;
+        .vbar-hover-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            font-size: 0.75rem;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .dark-mode .vbar-hover-item {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+        .vbar-hover-item:last-child {
+            border-bottom: none;
+        }
+        .vbar-hover-name {
+            font-weight: 600;
             color: var(--text-main);
-            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        .vbar-hover-prom {
+            font-weight: 800;
+            font-size: 0.7rem;
+            margin-left: 8px;
             flex-shrink: 0;
+        }
+        .vbar-hover-empty {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 4px 0;
+        }
+        .vbar-hover-more {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding-top: 4px;
+            font-weight: 700;
         }
         .enhanced-chart-footer {
             margin-top: 10px;
@@ -566,6 +665,36 @@
         }
         .btn-accion i {
             font-size: 13px;
+        }
+        .profile-img-container {
+            position: relative;
+        }
+        .profile-delete-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            background: #dc2626;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            z-index: 5;
+            padding: 0;
+            line-height: 1;
+        }
+        .profile-delete-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.1);
+        }
+        .profile-delete-btn i {
+            font-size: 12px;
         }
     </style>
     
@@ -668,66 +797,70 @@
                     ? '{{ __("Expandir") }}'
                     : '{{ __("Minimizar") }}';
             };
-
-            // Modal de alumnos en riesgo
-            const riesgoBox = document.getElementById('riesgo-box');
-            const atRiskData = @json($atRiskList);
-            
-            if (riesgoBox) {
-                riesgoBox.addEventListener('click', () => {
-                    if (!atRiskData || atRiskData.length === 0) {
-                        Swal.fire({
-                            title: @json(__('¡Todo en orden!')),
-                            text: @json(__('No hay alumnos en riesgo detectados.')),
-                            icon: 'success',
-                            confirmButtonColor: '#10504B'
-                        });
-                        return;
-                    }
-
-                    let content = `
-                        <div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 5px;">
-                            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #64748b;">
-                                ${@json(__('Haz clic en un alumno para ver su historial académico completo.'))}
-                            </p>
-                    `;
-
-                    atRiskData.forEach(alumno => {
-                        const historyUrl = "{{ route('historial.show', ':id') }}".replace(':id', alumno.idAlumnos);
-                        content += `
-                            <a href="${historyUrl}" class="at-risk-modal-item">
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(alumno.Nombre)}+${encodeURIComponent(alumno.Apellido)}&background=dc2626&color=fff" style="width: 32px; height: 32px; border-radius: 50%;">
-                                    <div>
-                                        <div style="font-weight: 700; font-size: 0.95rem;">${alumno.Nombre} ${alumno.Apellido}</div>
-                                        <div style="font-size: 0.75rem; color: #94a3b8;">${alumno.Matricula}</div>
-                                    </div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 0.7rem; color: #991b1b; font-weight: 700; text-transform: uppercase;">
-                                        PROMEDIO: ${alumno.promedio || 'N/A'}
-                                    </div>
-                                    <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: #cbd5e1;"></i>
-                                </div>
-                            </a>
-                        `;
-                    });
-
-                    content += '</div>';
-
-                    Swal.fire({
-                        title: `<span style="color: #991b1b;"><i class="fa-solid fa-triangle-exclamation"></i> ${@json(__('Alumnos en Riesgo'))}</span>`,
-                        html: content,
-                        showConfirmButton: false,
-                        showCloseButton: true,
-                        width: '500px',
-                        padding: '1.5rem',
-                        background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff'
-                    });
-                });
-            }
         });
     </script>
+
+    <script>
+        // Modal de alumnos por rango de calificación (tubos)
+        window.showTubeAlumnos = function(el) {
+            var alumnos = JSON.parse(el.getAttribute('data-alumnos') || '[]');
+            var label = el.getAttribute('data-label');
+            var color = el.getAttribute('data-color');
+            var total = alumnos.length;
+
+            if (total === 0) {
+                Swal.fire({
+                    title: `<span style="color: ${color};"><i class="fa-solid fa-graduation-cap"></i> ${label}</span>`,
+                    text: @json(__('No hay alumnos en este rango.')),
+                    icon: 'info',
+                    confirmButtonColor: '#10504B'
+                });
+                return;
+            }
+
+            var content = `
+                <div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 5px;">
+                    <p style="margin-bottom: 15px; font-size: 0.9rem; color: #64748b;">
+                        ${total} {{ __('alumno(s) en este rango') }}
+                    </p>
+            `;
+
+            alumnos.forEach(function(a) {
+                var historyUrl = "{{ route('historial.show', ':id') }}".replace(':id', a.idAlumnos);
+                var promColor = a.promedio > 0 && a.promedio < 8.5 ? (a.promedio < 8 ? '#dc2626' : '#f59e0b') : '#059669';
+                content += `
+                    <a href="${historyUrl}" class="at-risk-modal-item" style="border-left: 4px solid ${color};">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(a.Nombre)}+${encodeURIComponent(a.Apellido)}&background=${color.replace('#', '')}&color=fff" style="width: 32px; height: 32px; border-radius: 50%;">
+                            <div>
+                                <div style="font-weight: 700; font-size: 0.95rem;">${a.Nombre} ${a.Apellido}</div>
+                                <div style="font-size: 0.75rem; color: #94a3b8;">${a.Matricula}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.7rem; color: ${promColor}; font-weight: 700; text-transform: uppercase;">
+                                PROMEDIO: ${a.promedio || 'N/A'}
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: #cbd5e1;"></i>
+                        </div>
+                    </a>
+                `;
+            });
+
+            content += '</div>';
+
+            Swal.fire({
+                title: `<span style="color: ${color};"><i class="fa-solid fa-graduation-cap"></i> {{ __('Alumnos - ') }} ${label}</span>`,
+                html: content,
+                showConfirmButton: false,
+                showCloseButton: true,
+                width: '500px',
+                padding: '1.5rem',
+                background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff'
+            });
+        };
+    </script>
+
     <script>
         const fileInput = document.getElementById('profile-upload');
         const profileDisplay = document.getElementById('profile-display');
@@ -768,7 +901,7 @@
                 try { result = JSON.parse(raw); } catch (e) { result = null; }
 
                 if (!result || !response.ok || !result.success) {
-                    throw new Error((result && result.message) ? result.message : @json(__('El servidor devolvió una respuesta inesperada. Revisa credenciales de Cloudinary / sesión.')));
+                    throw new Error((result && result.message) ? result.message : @json(__('El servidor devolvió una respuesta inesperada. Revisa tu sesión e intenta de nuevo.')));
                 }
 
                 profileDisplay.src = result.foto_url;
@@ -777,6 +910,48 @@
                 Swal.fire(@json(__('Error')), error.message, 'error');
             }
         });
+
+        const deleteBtn = document.getElementById('delete-photo-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                const result = await Swal.fire({
+                    title: @json(__('¿Eliminar foto?')),
+                    text: @json(__('Se mostrarán tus iniciales.')),
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: @json(__('Eliminar')),
+                    cancelButtonText: @json(__('Cancelar'))
+                });
+
+                if (!result.isConfirmed) return;
+
+                try {
+                    const response = await fetch(@json(route('perfil.foto.delete')), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || @json(__('Error al eliminar foto')));
+                    }
+
+                    profileDisplay.src = data.foto_url;
+                    deleteBtn.remove();
+
+                    Swal.fire(@json(__('Eliminada')), @json(__('Foto eliminada correctamente.')), 'success');
+                } catch (error) {
+                    Swal.fire(@json(__('Error')), error.message, 'error');
+                }
+            });
+        }
     </script>
 </body>
 </html>

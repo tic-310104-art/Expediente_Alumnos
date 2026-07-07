@@ -189,7 +189,7 @@
         </div>
         <div class="info-item">
             <label>Grupo / Ciclo</label>
-            <span>{{ $alumno->grupo->Nombre ?? 'Sin grupo' }} ({{ $alumno->grupo->Periodo ?? 'N/A' }})</span>
+            <span>{{ $alumno->grupo->Grupo ?? 'Sin grupo' }} ({{ $alumno->grupo->Periodo ?? 'N/A' }})</span>
         </div>
         <div class="info-item">
             <label>Correo Institucional</label>
@@ -201,7 +201,7 @@
         </div>
         <div class="info-item">
             <label>Tutor Asignado</label>
-            <span>{{ $alumno->tutor->Nombre ?? 'No asignado' }} {{ $alumno->tutor->Apellido ?? '' }}</span>
+            <span>{{ optional($alumno->tutor)->Nombre ?? 'No asignado' }} {{ optional($alumno->tutor)->Apellido ?? '' }}</span>
         </div>
     </div>
 
@@ -250,7 +250,7 @@
                 @foreach($alumno->citasTutoria as $cita)
                 <tr>
                     <td><strong>Tutoría Individual</strong></td>
-                    <td>{{ $cita->Asunto }}</td>
+                    <td>{{ $cita->Motivo }}</td>
                     <td>{{ \Carbon\Carbon::parse($cita->Fecha)->format('d/m/Y') }}</td>
                 </tr>
                 @endforeach

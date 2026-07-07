@@ -28,15 +28,12 @@ class Alumno extends Model
         'foto_url'
     ];
 
-    /**
-     * Accesor para la foto de perfil
-     * Si es una URL externa (Cloudinary) la devuelve tal cual.
-     * Si es una ruta local, le añade asset() para que funcione en todas las vistas.
-     */
     public function getFotoUrlAttribute($value)
     {
         if (!$value) return null;
         if (str_starts_with($value, 'http')) return $value;
+        $path = public_path(ltrim($value, '/'));
+        if (!file_exists($path)) return null;
         return asset($value);
     }
 

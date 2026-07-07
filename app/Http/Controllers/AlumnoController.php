@@ -23,12 +23,24 @@ class AlumnoController extends Controller
 {
     public function index()
     {
-      $alumnos = Alumno::with(['grupo', 'tutor', 'servicioEscolar', 'carreras'])->get();
+        $alumnos = Alumno::with(['grupo', 'tutor', 'servicioEscolar', 'carreras'])->get();
         $carreras = Carrera::all();
         $grupos = Grupo::all();
         $tutores = Tutor::all();
 
-        return view('admins.gestion_alumnos', compact('alumnos', 'carreras', 'grupos', 'tutores'));
+        \Log::info('Carreras loaded:', ['count' => $carreras->count(), 'data' => $carreras->toArray()]);
+
+        return view('admins.gestion_alumnos', [
+            'alumnos' => $alumnos,
+            'carreras' => $carreras,
+            'grupos' => $grupos,
+            'tutores' => $tutores,
+        ]);
+    }
+
+    public function create()
+    {
+        return redirect()->route('alumnos.index');
     }
 
     public function store(Request $request)
@@ -49,6 +61,8 @@ class AlumnoController extends Controller
         
         if ($request->filled('Carreras_id')) {
             $alumno->carreras()->sync([$request->Carreras_id]);
+        } elseif ($alumno->grupo && $alumno->grupo->idCarreras) {
+            $alumno->carreras()->sync([$alumno->grupo->idCarreras]);
         }
 
         return redirect()->route('alumnos.index')
@@ -265,6 +279,55 @@ class AlumnoController extends Controller
             
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => __('Error al actualizar foto: ') . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteFoto()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => __('No autorizado')], 403);
+            }
+
+            $model = null;
+
+            if ($user->role === 'alumno') {
+                $model = $user->alumno;
+            } elseif ($user->role === 'tutor') {
+                $model = $user->tutor;
+            } elseif ($user->role === 'admin') {
+                $model = $user->servicioEscolar;
+            }
+
+            if ($model) {
+                if (!Schema::hasColumn($model->getTable(), 'foto_url')) {
+                    return response()->json(['success' => false, 'message' => __('La tabla no tiene campo de foto')], 400);
+                }
+
+                $currentPath = $model->getRawOriginal('foto_url');
+                if ($currentPath && !str_starts_with($currentPath, 'http')) {
+                    $oldFile = public_path(ltrim($currentPath, '/'));
+                    if (file_exists($oldFile) && is_file($oldFile)) {
+                        @unlink($oldFile);
+                    }
+                }
+
+                $model->update(['foto_url' => null]);
+
+                $name = urlencode($model->Nombre . '+' . $model->Apellido);
+                $initialsUrl = "https://ui-avatars.com/api/?name={$name}&background=10504B&color=fff&size=100";
+
+                return response()->json([
+                    'success' => true,
+                    'message' => __('Foto eliminada correctamente'),
+                    'foto_url' => $initialsUrl,
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => __('No se encontró el perfil')], 404);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => __('Error al eliminar foto: ') . $e->getMessage()], 500);
         }
     }
 

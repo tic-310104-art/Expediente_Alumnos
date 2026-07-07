@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('Citas de Psicología') }} (PDF)</title>
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 18px; color: #111827; background: #f8fafc; }
         .no-print { display: block; }

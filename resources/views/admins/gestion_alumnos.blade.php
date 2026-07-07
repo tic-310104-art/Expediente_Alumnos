@@ -65,9 +65,11 @@
                                 <label>{{ __('Carrera') }}</label>
                                 <select name="Carreras_id" class="form-control" id="carrera-select" required>
                                     <option value="" disabled selected>{{ __('Selecciona una Carrera') }}</option>
-                                    @foreach($carreras as $carrera)
+                                    @forelse($carreras as $carrera)
                                         <option value="{{ $carrera->idCarreras }}">{{ $carrera->Nombre }}</option>
-                                    @endforeach
+                                    @empty
+                                        <option value="" disabled>{{ __('No hay carreras registradas') }}</option>
+                                    @endforelse
                                 </select>
                             </div>
 
@@ -186,8 +188,11 @@
             </div>
         </main>
     </div>
-    <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        <script>
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            console.log('Carreras disponibles:', @json($carreras->count()), @json($carreras->pluck('Nombre')));
+
 
 
 

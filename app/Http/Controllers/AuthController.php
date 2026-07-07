@@ -14,101 +14,6 @@ class AuthController extends Controller
     private const EMERGENCY_EMAIL = 'admin@sistema.edu.mx';
 
     /**
-     * Asegura que la base de datos tenga las columnas necesarias.
-     * Útil cuando no se pueden correr migraciones por terminal.
-     */
-    private function checkAndFixDatabase()
-    {
-        try {
-            // 1. Verificar columnas básicas
-            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
-                \Illuminate\Support\Facades\DB::statement("ALTER TABLE users ADD COLUMN role VARCHAR(255) DEFAULT 'alumno' AFTER email");
-            }
-            
-            $tablas = ['alumnos', 'tutores', 'servicios_escolares'];
-            foreach ($tablas as $tabla) {
-                if (!\Illuminate\Support\Facades\Schema::hasColumn($tabla, 'user_id')) {
-                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE $tabla ADD COLUMN user_id BIGINT UNSIGNED NULL");
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn($tabla, 'foto_url')) {
-                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE $tabla ADD COLUMN foto_url VARCHAR(255) NULL");
-                }
-            }
-
-            // 1.1 Asegurar columna details en log_activities
-            if (\Illuminate\Support\Facades\Schema::hasTable('log_activities')) {
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('log_activities', 'details')) {
-                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE log_activities ADD COLUMN details TEXT NULL AFTER subject");
-                }
-            }
-
-            // 1.2 Asegurar tabla backup_schedules
-            if (!\Illuminate\Support\Facades\Schema::hasTable('backup_schedules')) {
-                \Illuminate\Support\Facades\Schema::create('backup_schedules', function ($table) {
-                    $table->id();
-                    $table->date('scheduled_date');
-                    $table->time('scheduled_time');
-                    $table->string('frequency')->default('once'); // once, 4_days, 7_days, monthly
-                    $table->boolean('is_active')->default(true);
-                    $table->timestamp('last_run_at')->nullable();
-                    $table->timestamps();
-                });
-            }
-
-            // 2. Asegurar existencia de Administrador Base
-            $adminEmail = 'admin@admin.com';
-            $adminUser = \App\Models\User::where('email', $adminEmail)->first();
-            
-            if (!$adminUser) {
-                $adminUser = \App\Models\User::create([
-                    'name' => 'Administrador Sistema',
-                    'email' => $adminEmail,
-                    'password' => \Illuminate\Support\Facades\Hash::make('Admin123*'),
-                    'role' => 'admin',
-                ]);
-            }
-
-            // 2.1 Asegurar que el admin tenga perfil en servicios_escolares
-            if ($adminUser) {
-                $profile = \App\Models\ServicioEscolar::where('user_id', $adminUser->id)->first();
-                if (!$profile) {
-                    \App\Models\ServicioEscolar::create([
-                        'Clave_Trabajador' => 'ADMIN_BASE',
-                        'Correo' => $adminEmail,
-                        'Rol' => 'Administrador',
-                        'Password' => $adminUser->password, // Misma contraseña
-                        'user_id' => $adminUser->id
-                    ]);
-                }
-            }
-
-            // 3. Sincronizar perfiles existentes que no tienen user_id
-            $servicios = \Illuminate\Support\Facades\DB::table('servicios_escolares')->whereNull('user_id')->get();
-            foreach ($servicios as $s) {
-                // Intentar obtener el correo de cualquier columna posible
-                $correo = $s->Correo ?? $s->Correo_inst ?? $s->Email ?? null; 
-                if (!$correo) continue;
-                
-                $user = \App\Models\User::where('email', $correo)->first();
-                if (!$user) {
-                    $user = \App\Models\User::create([
-                        'name' => 'Admin ' . $s->Clave_Trabajador,
-                        'email' => $correo,
-                        'password' => \Illuminate\Support\Facades\Hash::make('Admin123*'),
-                        'role' => 'admin',
-                    ]);
-                }
-                \Illuminate\Support\Facades\DB::table('servicios_escolares')
-                    ->where('idServicios_Escolares', $s->idServicios_Escolares)
-                    ->update(['user_id' => $user->id]);
-            }
-
-        } catch (\Exception $e) {
-            // Silencioso si falla
-        }
-    }
-
-    /**
      * Mostrar vista de login
      */
     public function showLogin()
@@ -117,7 +22,6 @@ class AuthController extends Controller
         if (\Illuminate\Support\Facades\Auth::check()) {
             return $this->redirectBasedOnRole(\Illuminate\Support\Facades\Auth::user());
         }
-        $this->checkAndFixDatabase();
         return view('login');
     }
 
@@ -152,7 +56,6 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         app()->setLocale('es');
-        $this->checkAndFixDatabase();
 
         $request->validate([
             'email'    => ['required', 'email'],
@@ -363,7 +266,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $this->checkAndFixDatabase();
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'Nombre' => 'required|string|max:255',
             'Apellido' => 'required|string|max:255',

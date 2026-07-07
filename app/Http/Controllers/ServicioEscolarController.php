@@ -52,15 +52,19 @@ class ServicioEscolarController extends Controller
         ])->get();
 
         if (!\Illuminate\Support\Facades\Schema::hasTable('backup_schedules')) {
-            \Illuminate\Support\Facades\Schema::create('backup_schedules', function ($table) {
-                $table->id();
-                $table->date('scheduled_date');
-                $table->time('scheduled_time');
-                $table->string('frequency')->default('once');
-                $table->boolean('is_active')->default(true);
-                $table->timestamp('last_run_at')->nullable();
-                $table->timestamps();
-            });
+            try {
+                \Illuminate\Support\Facades\Schema::create('backup_schedules', function ($table) {
+                    $table->id();
+                    $table->date('scheduled_date');
+                    $table->time('scheduled_time');
+                    $table->string('frequency')->default('once');
+                    $table->boolean('is_active')->default(true);
+                    $table->timestamp('last_run_at')->nullable();
+                    $table->timestamps();
+                });
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('No se pudo crear tabla backup_schedules: ' . $e->getMessage());
+            }
         }
 
         $activeBackup = BackupSchedule::where('is_active', true)->orderBy('id', 'desc')->first();
@@ -123,6 +127,12 @@ class ServicioEscolarController extends Controller
 
     public function importBackup(Request $request)
     {
+        if (!app()->environment('local')) {
+            $message = __('La restauración de base de datos solo está disponible en entorno local.');
+            if ($request->expectsJson()) return response()->json(['success' => false, 'message' => $message], 403);
+            return back()->with('import_error', $message);
+        }
+
         $request->validate([
             'backup_file' => 'required|file',
         ]);

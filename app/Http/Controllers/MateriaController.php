@@ -29,7 +29,7 @@ class MateriaController extends Controller
             'idCarreras' => 'required|exists:carreras,idCarreras',
         ]);
 
-        Materia::create($request->all());
+        Materia::create($request->only(['Nombre', 'Cuatrimestre', 'idCarreras']));
 
         return redirect()->back()->with('success', 'Materia añadida exitosamente al plan de estudios.');
     }
@@ -40,7 +40,8 @@ class MateriaController extends Controller
     public function update(Request $request, $id)
     {
         $materia = Materia::findOrFail($id);
-        $materia->update($request->all());
+        $request->validate(['Nombre' => 'required|string|max:255', 'Cuatrimestre' => 'required|integer|min:1|max:14']);
+        $materia->update($request->only(['Nombre', 'Cuatrimestre']));
 
         return redirect()->back()->with('success', 'Materia actualizada correctamente.');
     }

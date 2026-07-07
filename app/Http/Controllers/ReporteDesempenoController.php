@@ -14,10 +14,7 @@ class ReporteDesempenoController extends Controller
      */
     public function show($alumnoId)
     {
-        $alumno = Alumno::with(['reportesDesempeno', 'historialAcademico'])->findOrFail($alumnoId);
-        $tutor = Tutor::findOrFail($alumno->Tutores_id);
-        
-        return view('tutores.gestion_reportes_alumno', compact('alumno', 'tutor'));
+        return redirect()->back()->with('info', __('Funcionalidad de reportes en desarrollo.'));
     }
 
     /**

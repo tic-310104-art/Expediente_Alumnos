@@ -89,6 +89,8 @@ class CalificacionController extends Controller
         // El middleware EnsureOwnership ya validó que $id sea el del alumno logueado
         // (o admin tiene acceso libre)
 
-        return view('alumnos.historial_completo', compact('alumno'));
+        $historial = $alumno->historialAcademico;
+
+        return view('alumnos.historial_completo', compact('alumno', 'historial'));
     }
 }

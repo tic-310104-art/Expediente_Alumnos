@@ -28,12 +28,15 @@ Route::middleware('guest')->get('/sesion', [AuthController::class, 'showLogin'])
 // El POST de login siempre se procesa (el método redirige si ya está autenticado)
 Route::post('/sesion', [AuthController::class, 'login'])->name('login.post');
 
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // --- RUTAS PROTEGIDAS POR AUTENTICACIÓN ---
 Route::middleware('auth')->group(function () {
 
     Route::post('/perfil/foto', [AlumnoController::class, 'updateFoto'])->name('perfil.foto.update');
+    Route::delete('/perfil/foto', [AlumnoController::class, 'deleteFoto'])->name('perfil.foto.delete');
 
     Route::get('/set-locale/{locale}', function ($locale) {
         if (in_array($locale, ['en', 'es'])) {
