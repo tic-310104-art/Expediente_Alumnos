@@ -19,6 +19,8 @@
 /storage/*.key
 /storage/pail
 /vendor
+scheduler.bat
+/public/fotos_de_perfil/
 Homestead.json
 Homestead.yaml
 Thumbs.db

@@ -181,6 +181,7 @@
             // --- Lógica de Autorización para Acciones Críticas ---
             window.promptTokenAndActivate = async function() {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                const isDark = document.body.classList.contains('dark-mode');
                 
                 return Swal.fire({
                     title: '{{ __("Confirmación de Seguridad") }}',
@@ -189,8 +190,10 @@
                     showCancelButton: true,
                     confirmButtonText: '{{ __("Sí, continuar") }}',
                     cancelButtonText: '{{ __("Cancelar") }}',
-                    confirmButtonColor: '#10504B',
+                    confirmButtonColor: '#0d9488',
                     showLoaderOnConfirm: true,
+                    background: isDark ? '#1e293b' : '#fff',
+                    color: isDark ? '#f1f5f9' : '#2d3748',
                     preConfirm: () => {
                         return fetch("{{ route('jwt.verify') }}", {
                             method: 'POST',

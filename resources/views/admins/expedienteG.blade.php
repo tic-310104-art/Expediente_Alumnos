@@ -87,16 +87,16 @@
                     <h3><i class="fa-solid fa-database"></i> {{ __('Respaldos Automatizados') }}</h3>
                     
                     @if($activeBackup)
-                        <div class="alert alert-success" style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid #10504B;">
-                            <div style="background: #10504B; color: white; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <div class="alert alert-success" style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary-color);">
+                            <div style="background: var(--primary-color); color: white; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
                                 <i class="fa-solid fa-calendar-check"></i>
                             </div>
                             <div>
-                                <h4 style="margin: 0; font-size: 14px; color: #10504B;">{{ __('Respaldo Agendado en el Sistema') }}</h4>
-                                <p style="margin: 3px 0 0 0; font-size: 13px; color: #1e293b; line-height: 1.4;">
-                                    {{ __('Siguiente ejecución automática:') }} <strong style="color: #10504B;">{{ \Carbon\Carbon::parse($activeBackup->scheduled_date)->format('d/m/Y') }}</strong> {{ __('a las') }} <strong>{{ $activeBackup->scheduled_time }}</strong>
+                                <h4 style="margin: 0; font-size: 14px; color: var(--primary-color);">{{ __('Respaldo Agendado en el Sistema') }}</h4>
+                                <p style="margin: 3px 0 0 0; font-size: 13px; color: var(--text-main); line-height: 1.4;">
+                                    {{ __('Siguiente ejecución automática:') }} <strong style="color: var(--primary-color);">{{ \Carbon\Carbon::parse($activeBackup->scheduled_date)->format('d/m/Y') }}</strong> {{ __('a las') }} <strong>{{ $activeBackup->scheduled_time }}</strong>
                                     <br>
-                                    <span style="display: inline-block; margin-top: 4px; padding: 2px 8px; background: rgba(16, 80, 75, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700;">
+                                    <span style="display: inline-block; margin-top: 4px; padding: 2px 8px; background: var(--border-color); border-radius: 4px; font-size: 11px; font-weight: 700; color: var(--text-main);">
                                         <i class="fa-solid fa-repeat"></i> {{ __('Frecuencia:') }} 
                                         @if($activeBackup->frequency == 'once') {{ __('Una sola vez') }}
                                         @elseif($activeBackup->frequency == '4_days') {{ __('Cada 4 días') }}
@@ -136,6 +136,21 @@
                                 </div>
                                 <button type="button" id="btn-schedule" class="btn-primary" style="width: 100%; margin-top: 20px; display: flex; justify-content: center; gap: 8px; padding: 14px;">
                                     <i class="fa-solid fa-shield-halved"></i> {{ __('Aplicar Configuración') }}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 25px;">
+                            <form id="form-manual-backup" action="{{ route('backup.manual') }}" method="POST" style="background: var(--bg-color); padding: 20px; border-radius: 14px; border: 1px solid var(--border-color);">
+                                @csrf
+                                <h4 style="margin: 0 0 15px 0; font-size: 14px; color: var(--primary-color); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-bolt"></i> {{ __('Respaldo Manual Inmediato') }}
+                                </h4>
+                                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+                                    {{ __('Genera un respaldo completo de la base de datos en este mismo momento.') }}
+                                </p>
+                                <button type="button" id="btn-manual-backup" class="btn-primary" style="width: 100%; display: flex; justify-content: center; gap: 8px; padding: 14px;">
+                                    <i class="fa-solid fa-database"></i> {{ __('Ejecutar Respaldo Manual') }}
                                 </button>
                             </form>
                         </div>
@@ -181,24 +196,26 @@
                 title: @json(__('Confirmación de Seguridad')),
                 html: `
                     <div style="text-align: center; padding: 10px;">
-                        <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10504B; margin-bottom: 15px;"></i>
-                            <p style="color: #374151; font-weight: 600; margin-bottom: 5px;">@json(__('Acción Crítica Detectada'))</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">@json(__('Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.'))</p>
+                        <div style="background: var(--bg-color); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                            <p style="color: var(--text-main); font-weight: 600; margin-bottom: 5px;">@json(__('Acción Crítica Detectada'))</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">@json(__('Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.'))</p>
                         </div>
-                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: #374151;">@json(__('Token JWT'))</label>
-                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box;">
+                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: var(--text-main);">@json(__('Token JWT'))</label>
+                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); box-sizing: border-box; background: var(--card-bg); color: var(--text-main);">
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: @json(__('Autorizar Acción')),
                 cancelButtonText: @json(__('Cancelar')),
-                confirmButtonColor: '#10504B',
+                confirmButtonColor: '#0d9488',
                 cancelButtonColor: '#6b7280',
                 width: '500px',
                 padding: '1.5rem',
                 focusConfirm: false,
                 showLoaderOnConfirm: true,
+                background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
+                color: document.body.classList.contains('dark-mode') ? '#f1f5f9' : '#2d3748',
                 preConfirm: () => {
                     const token = document.getElementById('swal-token').value;
                     if (!token) {
@@ -241,6 +258,52 @@
                             showConfirmButton: false,
                             willClose: () => form.submit()
                         });
+                    }
+                });
+            }
+
+            // Botón: Respaldo Manual
+            const btnManualBackup = document.getElementById('btn-manual-backup');
+            if (btnManualBackup) {
+                btnManualBackup.addEventListener('click', async function() {
+                    const form = document.getElementById('form-manual-backup');
+                    const ok = await promptTokenAndActivate();
+                    if (ok) {
+                        Swal.fire({
+                            title: @json(__('Generando respaldo...')),
+                            text: @json(__('Por favor espera, esto puede tardar algunos segundos.')),
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        try {
+                            const formData = new FormData(form);
+                            const resp = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
+                            });
+
+                            const raw = await resp.text();
+                            let json = null;
+                            try { json = JSON.parse(raw); } catch (e) { json = null; }
+
+                            if (!json || !resp.ok) {
+                                throw new Error((json && json.message) ? json.message : @json(__('El servidor devolvió una respuesta inesperada.')));
+                            }
+
+                            if (!json.success) {
+                                throw new Error(json.message || @json(__('No se pudo crear el respaldo.')));
+                            }
+
+                            Swal.fire(@json(__('¡Respaldo Exitoso!')), json.message, 'success');
+                        } catch (e) {
+                            Swal.fire(@json(__('Error')), e.message, 'error');
+                        }
                     }
                 });
             }

@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
         // Rutas que requieren confirmación crítica
         Route::middleware('critical')->group(function() {
             Route::post('/backup/schedule', [ServicioEscolarController::class, 'scheduleBackup'])->name('backup.schedule');
+            Route::post('/backup/manual', [ServicioEscolarController::class, 'manualBackup'])->name('backup.manual');
             Route::post('/backup/import', [ServicioEscolarController::class, 'importBackup'])->name('backup.import');
             Route::delete('/alumnos/{alumno}', [AlumnoController::class, 'destroy'])->name('alumnos.destroy');
             Route::delete('/tutores/{tutore}', [TutorController::class, 'destroy'])->name('tutores.destroy');

@@ -849,14 +849,16 @@
 
             content += '</div>';
 
+            const isDarkMode = document.body.classList.contains('dark-mode');
             Swal.fire({
-                title: `<span style="color: ${color};"><i class="fa-solid fa-graduation-cap"></i> {{ __('Alumnos - ') }} ${label}</span>`,
+                title: `<span style="color: ${isDarkMode ? '#f1f5f9' : color};"><i class="fa-solid fa-graduation-cap"></i> {{ __('Alumnos - ') }} ${label}</span>`,
                 html: content,
                 showConfirmButton: false,
                 showCloseButton: true,
                 width: '500px',
                 padding: '1.5rem',
-                background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff'
+                background: isDarkMode ? '#1e293b' : '#fff',
+                color: isDarkMode ? '#f1f5f9' : '#2d3748'
             });
         };
     </script>

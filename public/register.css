@@ -153,6 +153,14 @@ h2 {
     color: #18736c;
 }
 
+@media (max-width: 480px) {
+    .container { padding: 35px 20px 30px; max-width: 100%; margin: 50px 10px 20px; }
+    .logo-container { width: 65px; height: 65px; top: -32px; }
+    h2 { font-size: 20px; margin-bottom: 25px; }
+    .input-group { margin-bottom: 18px; }
+    .input-group input { padding: 12px 10px; font-size: 14px; }
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         color: #e2e8f0;

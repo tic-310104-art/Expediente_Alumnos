@@ -15,7 +15,9 @@ body {
     align-items: center;
     min-height: 100vh;
     color: #111827;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-text-size-adjust: 100%;
 }
 
 .auth-shell {
@@ -199,4 +201,13 @@ h2 {
     }
     .auth-visual::after { display: none; }
     .auth-form { padding: 34px 22px; }
+}
+
+@media (max-width: 480px) {
+    .auth-shell { width: calc(100vw - 20px); padding: 10px 0; }
+    .auth-visual { min-height: 180px; padding: 20px 16px; }
+    .auth-form { padding: 24px 16px; }
+    h2 { font-size: 20px; margin-bottom: 25px; }
+    .input-group { margin-bottom: 18px; }
+    .input-group input { padding: 12px 10px; font-size: 14px; }
 }

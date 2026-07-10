@@ -152,8 +152,8 @@
                                     <td>{{ $alumno->Cuatrimestre }}</td>
                                     <td>{{ $alumno->Correo_inst}}</td>
                                     <td>{{ $alumno->Telefono}}</td>
-                                    <td style="min-width: 160px;">
-                                        <form class="estatus-form" action="{{ route('alumnos.estatus', $alumno->idAlumnos) }}" method="POST">
+<td>
+                                                        <form class="estatus-form" action="{{ route('alumnos.estatus', $alumno->idAlumnos) }}" method="POST">
                                             @csrf
                                             @php $current = strtolower($alumno->Estatus ?? 'activo'); @endphp
                                             <select name="estatus" class="form-control" onchange="handleEstatusChange(this)">
