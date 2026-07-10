@@ -311,17 +311,17 @@
                                         $promColor = $promedio > 0 ? ($promedio < 8 ? '#dc2626' : ($promedio < 8.5 ? '#f59e0b' : ($promedio < 9.5 ? '#15803d' : '#059669'))) : '#4b5563';
                                     @endphp
                                     <tr>
-                                        <td><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" style="color:#2b7a78;font-weight:bold;">{{ $alumno->Matricula }}</a></td>
-                                        <td>{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
-                                        <td>{{ $alumno->Correo_inst }}</td>
-                                        <td>{{ $alumno->Cuatrimestre }}</td>
-                                        <td>
+                                        <td data-label="{{ __('Matrícula') }}"><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" style="color:#2b7a78;font-weight:bold;">{{ $alumno->Matricula }}</a></td>
+                                        <td data-label="{{ __('Nombre') }}">{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
+                                        <td data-label="{{ __('Correo') }}">{{ $alumno->Correo_inst }}</td>
+                                        <td data-label="{{ __('Cuatrimestre') }}">{{ $alumno->Cuatrimestre }}</td>
+                                        <td data-label="{{ __('Promedio') }}">
                                             <span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;color:#fff;background:{{ $promColor }};">
                                                 {{ $promedio > 0 ? number_format($promedio, 1) : 'N/A' }}
                                             </span>
                                         </td>
-                                        <td><span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;border:1px solid rgba(0,0,0,0.06);{{ $badgeStyle }}">{{ __($estatusLabel) }}</span></td>
-                                        <td>
+                                        <td data-label="{{ __('Estatus') }}"><span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;border:1px solid rgba(0,0,0,0.06);{{ $badgeStyle }}">{{ __($estatusLabel) }}</span></td>
+                                        <td data-label="{{ __('Acciones') }}">
                                             <div class="acciones-group">
                                                 <a href="{{ route('tutor.alumnos.calificaciones', ['id' => $tutor->idTutores, 'alumnoId' => $alumno->idAlumnos]) }}" class="btn-accion" style="background:#dc2626;" title="{{ __('Asignar Calificaciones') }}">
                                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -695,6 +695,14 @@
         }
         .profile-delete-btn i {
             font-size: 12px;
+        }
+        @media (max-width: 480px) {
+            .acciones-group { flex-wrap: wrap; gap: 3px; }
+            .btn-accion { width: 26px; height: 26px; font-size: 10px; }
+            .btn-accion i { font-size: 11px; }
+            .vbar-container { gap: 10px; padding: 10px 5px; }
+            .vbar-hover-popup { min-width: 140px; max-width: 180px; left: auto; right: 0; }
+            .enhanced-chart-capacity { gap: 10px; font-size: 0.75rem; flex-wrap: wrap; }
         }
     </style>
     

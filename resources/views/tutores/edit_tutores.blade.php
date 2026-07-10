@@ -98,28 +98,31 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
         async function promptTokenAndActivate() {
+            const isDark = document.body.classList.contains('dark-mode');
             return Swal.fire({
                 title: '{{ __("Confirmación de Seguridad") }}',
                 html: `
                     <div style="text-align: center; padding: 10px;">
-                        <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10504B; margin-bottom: 15px;"></i>
-                            <p style="color: #374151; font-weight: 600; margin-bottom: 5px;">{{ __("Acción Crítica Detectada") }}</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">{{ __("Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.") }}</p>
+                        <div style="background: ${isDark ? '#1e293b' : '#f3f4f6'}; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                            <p style="color: ${isDark ? '#f1f5f9' : '#374151'}; font-weight: 600; margin-bottom: 5px;">{{ __("Acción Crítica Detectada") }}</p>
+                            <p style="color: ${isDark ? '#94a3b8' : '#6b7280'}; font-size: 0.9rem; margin: 0;">{{ __("Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.") }}</p>
                         </div>
-                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: #374151;">{{ __("Token JWT") }}</label>
-                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box;">
+                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: ${isDark ? '#f1f5f9' : '#374151'};">{{ __("Token JWT") }}</label>
+                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid ${isDark ? '#475569' : '#d1d5db'}; box-sizing: border-box; background: ${isDark ? '#1e293b' : '#fff'}; color: ${isDark ? '#f1f5f9' : '#374151'};">
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: '{{ __("Autorizar Cambio") }}',
                 cancelButtonText: '{{ __("Cancelar") }}',
-                confirmButtonColor: '#10504B',
+                confirmButtonColor: '#0d9488',
                 cancelButtonColor: '#6b7280',
                 width: '500px',
                 padding: '1.5rem',
                 focusConfirm: false,
                 showLoaderOnConfirm: true,
+                background: isDark ? '#1e293b' : '#fff',
+                color: isDark ? '#f1f5f9' : '#2d3748',
                 preConfirm: () => {
                     const token = document.getElementById('swal-token').value;
                     if (!token) {
