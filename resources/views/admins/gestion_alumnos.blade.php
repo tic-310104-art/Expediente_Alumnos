@@ -146,13 +146,13 @@
                                     data-carrera="{{ $alumno->carrera->Nombre ?? '' }}" 
                                     data-cuatrimestre="{{ $alumno->Cuatrimestre }}" 
                                     data-estatus="{{ strtolower($alumno->Estatus ?? 'activo') }}">
-                                    <td><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" class="link-perfil">{{ $alumno->Matricula }}</a></td>
-                                    <td>{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
-                                    <td>{{ $alumno->carrera->Nombre ?? __('Sin Carrera') }}</td>
-                                    <td>{{ $alumno->Cuatrimestre }}</td>
-                                    <td>{{ $alumno->Correo_inst}}</td>
-                                    <td>{{ $alumno->Telefono}}</td>
-<td>
+                                    <td data-label="{{ __('Matrícula') }}"><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" class="link-perfil">{{ $alumno->Matricula }}</a></td>
+                                    <td data-label="{{ __('Nombre') }}">{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
+                                    <td data-label="{{ __('Carrera') }}">{{ $alumno->carrera->Nombre ?? __('Sin Carrera') }}</td>
+                                    <td data-label="{{ __('Cuatrimestre') }}">{{ $alumno->Cuatrimestre }}</td>
+                                    <td data-label="{{ __('Correo') }}">{{ $alumno->Correo_inst}}</td>
+                                    <td data-label="{{ __('Teléfono') }}">{{ $alumno->Telefono}}</td>
+<td data-label="{{ __('Estatus') }}">
                                                         <form class="estatus-form" action="{{ route('alumnos.estatus', $alumno->idAlumnos) }}" method="POST">
                                             @csrf
                                             @php $current = strtolower($alumno->Estatus ?? 'activo'); @endphp
@@ -164,7 +164,7 @@
                                         </form>
                                     </td>
                                   
-                                    <td>
+                                    <td data-label="{{ __('Acciones') }}">
                                         <div class="action-buttons">
                                             <a href="{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}" target="_blank" class="btn-icon btn-pdf" title="{{ __('Descargar Resumen PDF') }}" style="background-color: #0d9488; color: white;">
                                                 <i class="fa-solid fa-file-pdf"></i>

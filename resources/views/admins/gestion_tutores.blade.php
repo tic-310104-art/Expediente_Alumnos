@@ -132,11 +132,11 @@
                                 @foreach($tutores as $tutor)
                                 <tr class="tutor-row" 
                                     data-carrera="{{ $tutor->carrera ? $tutor->carrera->Nombre : '' }}">
-                                    <td><a href="{{ route('tutor.dashboard', $tutor->idTutores) }}" style="color:#2b7a78; font-weight:bold; text-decoration:none;">{{ $tutor->Clave_Trabajador }}</a></td>
-                                    <td>{{ $tutor->Nombre }}</td>
-                                    <td> {{ $tutor->Apellido }}</td>
-                                    <td>{{ $tutor->carrera ? $tutor->carrera->Nombre : __('Sin Carrera') }}</td>
-                                    <td>
+                                    <td data-label="{{ __('Clave') }}"><a href="{{ route('tutor.dashboard', $tutor->idTutores) }}" style="color:#2b7a78; font-weight:bold; text-decoration:none;">{{ $tutor->Clave_Trabajador }}</a></td>
+                                    <td data-label="{{ __('Nombre') }}">{{ $tutor->Nombre }}</td>
+                                    <td data-label="{{ __('Apellido') }}">{{ $tutor->Apellido }}</td>
+                                    <td data-label="{{ __('Carrera') }}">{{ $tutor->carrera ? $tutor->carrera->Nombre : __('Sin Carrera') }}</td>
+                                    <td data-label="{{ __('Grupos') }}">
                                         @forelse($tutor->grupos as $grupo)
                                             <span class="badge" style="background: #2b7a78; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin: 2px; display: inline-block;">
                                                 {{ $grupo->Grupo }}
@@ -145,15 +145,15 @@
                                             <span style="font-size: 11px; color: #999;">{{ __('Sin Grupos') }}</span>
                                         @endforelse
                                     </td>
-                                    <td>
+                                    <td data-label="{{ __('Tutorados') }}">
                                         <span class="badge" style="background: #10504B; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;">
                                             {{ $tutor->alumnos->count() }} {{ __('Alumnos') }}
                                         </span>
                                     </td>
-                                    <td>{{ $tutor->Correo_inst }}</td>
-                                    <td>{{ $tutor->Telefono }}</td>
+                                    <td data-label="{{ __('Correo') }}">{{ $tutor->Correo_inst }}</td>
+                                    <td data-label="{{ __('Teléfono') }}">{{ $tutor->Telefono }}</td>
 
-                                    <td>
+                                    <td data-label="{{ __('Acciones') }}">
                                         <div class="action-buttons">
                                             <!-- ASIGNAR GRUPO -->
                                             <button class="btn-icon btn-view" title="{{ __('Asignar Grupo') }}" 
@@ -194,28 +194,31 @@
         const allGrupos = @json($grupos);
 
         async function promptTokenAndActivate() {
+            const isDark = document.body.classList.contains('dark-mode');
             return Swal.fire({
                 title: '{{ __("Confirmación de Seguridad") }}',
                 html: `
                     <div style="text-align: center; padding: 10px;">
-                        <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10504B; margin-bottom: 15px;"></i>
-                            <p style="color: #374151; font-weight: 600; margin-bottom: 5px;">{{ __("Acción Crítica Detectada") }}</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">{{ __("Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.") }}</p>
+                        <div style="background: ${isDark ? '#1e293b' : '#f3f4f6'}; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                            <p style="color: ${isDark ? '#f1f5f9' : '#374151'}; font-weight: 600; margin-bottom: 5px;">{{ __("Acción Crítica Detectada") }}</p>
+                            <p style="color: ${isDark ? '#94a3b8' : '#6b7280'}; font-size: 0.9rem; margin: 0;">{{ __("Para proteger la integridad del sistema, por favor ingresa tu token de seguridad.") }}</p>
                         </div>
-                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: #374151;">{{ __("Token JWT") }}</label>
-                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box;">
+                        <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 600; color: ${isDark ? '#f1f5f9' : '#374151'};">{{ __("Token JWT") }}</label>
+                        <input id="swal-token" class="swal2-input" placeholder="eyJhbGciOiJIUzI1Ni..." style="width: 100%; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid ${isDark ? '#475569' : '#d1d5db'}; box-sizing: border-box; background: ${isDark ? '#1e293b' : '#fff'}; color: ${isDark ? '#f1f5f9' : '#374151'};">
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: '{{ __("Autorizar Acción") }}',
                 cancelButtonText: '{{ __("Cancelar") }}',
-                confirmButtonColor: '#10504B',
+                confirmButtonColor: '#0d9488',
                 cancelButtonColor: '#6b7280',
                 width: '500px',
                 padding: '1.5rem',
                 focusConfirm: false,
                 showLoaderOnConfirm: true,
+                background: isDark ? '#1e293b' : '#fff',
+                color: isDark ? '#f1f5f9' : '#2d3748',
                 preConfirm: () => {
                     const token = document.getElementById('swal-token').value;
                     if (!token) {
@@ -279,15 +282,16 @@
                 optionsHtml = '<option value="" disabled selected>{{ __("No hay grupos disponibles para esta carrera") }}</option>';
             }
 
+            const isDarkAssign = document.body.classList.contains('dark-mode');
             Swal.fire({
                 title: '{{ __("Asignar Grupo a") }} ' + tutorName,
                 html: `
                     <div style="text-align: left; padding: 10px;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151;">{{ __("Selecciona el Grupo") }}</label>
-                        <select id="swal-idGrupos" class="swal2-select" style="width: 100%; margin: 0; display: block; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600; color: ${isDarkAssign ? '#f1f5f9' : '#374151'};">{{ __("Selecciona el Grupo") }}</label>
+                        <select id="swal-idGrupos" class="swal2-select" style="width: 100%; margin: 0; display: block; padding: 12px; border-radius: 8px; border: 1px solid ${isDarkAssign ? '#475569' : '#d1d5db'}; box-sizing: border-box; background: ${isDarkAssign ? '#1e293b' : '#fff'}; color: ${isDarkAssign ? '#f1f5f9' : '#374151'};">
                             ${optionsHtml}
                         </select>
-                        <p style="margin-top: 10px; font-size: 12px; color: #6b7280; line-height: 1.4;">
+                        <p style="margin-top: 10px; font-size: 12px; color: ${isDarkAssign ? '#94a3b8' : '#6b7280'}; line-height: 1.4;">
                             <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>
                             {{ __('Al asignar el grupo, todos sus alumnos serán vinculados automáticamente a este tutor.') }}
                         </p>
@@ -296,11 +300,13 @@
                 showCancelButton: true,
                 confirmButtonText: '{{ __("Asignar") }}',
                 cancelButtonText: '{{ __("Cancelar") }}',
-                confirmButtonColor: '#10504B',
+                confirmButtonColor: '#0d9488',
                 cancelButtonColor: '#6b7280',
                 width: '500px',
                 padding: '1.5rem',
                 focusConfirm: false,
+                background: isDarkAssign ? '#1e293b' : '#fff',
+                color: isDarkAssign ? '#f1f5f9' : '#2d3748',
                 preConfirm: () => {
                     const idGrupos = document.getElementById('swal-idGrupos').value;
                     if (!idGrupos) {
