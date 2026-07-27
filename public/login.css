@@ -218,10 +218,11 @@ h2 {
 @media (max-width: 480px) {
     .auth-shell { width: calc(100vw - 20px); padding: 10px 0; }
     .auth-visual {
-        min-height: 120px;
+        min-height: 200px;
         padding: 16px 20px;
-        background-size: cover;
-        background-position: center 30%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
         background-color: #0b1220;
     }
     .auth-visual::after { display: none; }
@@ -234,9 +235,12 @@ h2 {
 @media (max-width: 380px) {
     .auth-shell { width: calc(100vw - 12px); padding: 6px 0; }
     .auth-visual {
-        min-height: 80px;
+        min-height: 140px;
         padding: 10px 14px;
-        background-position: center 30%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: #0b1220;
     }
     .auth-form { padding: 18px 12px; }
     h2 { font-size: 18px; margin-bottom: 20px; }
