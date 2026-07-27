@@ -17,7 +17,7 @@
 
         <main class="main-content">
             @if(session('success'))
-                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <div class="alert-success">
                     {{ session('success') }}
                 </div>
             @endif
@@ -92,9 +92,9 @@
                     <h3><i class="fa-solid fa-users"></i> {{ __('Directorio de Alumnos') }}</h3>
                     
                     {{-- FILTROS AVANZADOS --}}
-                    <div class="filters-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg-color); border-radius: 8px;">
+                    <div class="filters-container">
                         <div class="filter-group">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px;">{{ __('Carrera') }}</label>
+                            <label>{{ __('Carrera') }}</label>
                             <select id="filter-carrera" class="form-control">
                                 <option value="">{{ __('Todas') }}</option>
                                 @foreach($carreras as $carrera)
@@ -103,7 +103,7 @@
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px;">{{ __('Cuatrimestre') }}</label>
+                            <label>{{ __('Cuatrimestre') }}</label>
                             <select id="filter-cuatrimestre" class="form-control">
                                 <option value="">{{ __('Todos') }}</option>
                                 @for($i=1; $i<=11; $i++)
@@ -112,7 +112,7 @@
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px;">{{ __('Estatus') }}</label>
+                            <label>{{ __('Estatus') }}</label>
                             <select id="filter-estatus" class="form-control">
                                 <option value="">{{ __('Todos') }}</option>
                                 <option value="activo">{{ __('Activo') }}</option>
@@ -120,8 +120,8 @@
                                 <option value="riesgo">{{ __('En riesgo') }}</option>
                             </select>
                         </div>
-                        <div class="filter-group" style="display: flex; align-items: flex-end;">
-                            <button id="clear-filters" class="btn-secondary" style="width: 100%;">{{ __('Limpiar Filtros') }}</button>
+                        <div class="filter-group">
+                            <button id="clear-filters" class="btn-secondary btn-block">{{ __('Limpiar Filtros') }}</button>
                         </div>
                     </div>
 
@@ -166,7 +166,7 @@
                                   
                                     <td data-label="{{ __('Acciones') }}">
                                         <div class="action-buttons">
-                                            <a href="{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}" target="_blank" class="btn-icon btn-pdf" title="{{ __('Descargar Resumen PDF') }}" style="background-color: #0d9488; color: white;">
+                                            <a href="#" onclick="printViaIframe('{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}'); return false;" class="btn-icon btn-pdf" title="{{ __('Descargar Resumen PDF') }}">
                                                 <i class="fa-solid fa-file-pdf"></i>
                                             </a>
                                             <a href="{{ route('alumnos.edit', $alumno->idAlumnos) }}" class="btn-icon btn-edit" title="{{ __('Editar') }}">

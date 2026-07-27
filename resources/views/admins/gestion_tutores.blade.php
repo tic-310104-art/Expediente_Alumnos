@@ -97,7 +97,7 @@
                     <h3><i class="fa-solid fa-list"></i> {{ __('Lista de Tutores') }}</h3>
                     
                     {{-- FILTROS --}}
-                    <div class="filters-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg-color); border-radius: 8px;">
+                    <div class="filters-container">
                         <div class="filter-group">
                             <label style="display: block; font-size: 13px; margin-bottom: 5px;">{{ __('Carrera') }}</label>
                             <select id="filter-carrera" class="form-control">

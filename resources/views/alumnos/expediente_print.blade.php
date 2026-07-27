@@ -197,7 +197,12 @@
         </div>
         <div class="info-item">
             <label>Estatus Académico</label>
-            <span>{{ $alumno->Rol }}</span>
+            @php
+                $promE = $alumno->historialAcademico->avg('Calificacion');
+                $riesgoE = $promE ? \App\Models\Alumno::getRiesgoStatus($promE) : 'N/A';
+                $colorE = $promE ? \App\Models\Alumno::getRiesgoColor($promE) : '#4b5563';
+            @endphp
+            <span style="color:{{ $colorE }};font-weight:700;">{{ $riesgoE }}</span>
         </div>
         <div class="info-item">
             <label>Tutor Asignado</label>
@@ -224,7 +229,8 @@
                     <td>{{ $historial->Profesor }}</td>
                     <td>{{ $historialDocumento = $historial->Horario }}</td>
                     <td>{{ $historial->Ciclo }}</td>
-                    <td style="text-align: center; font-weight: bold;">{{ $historial->Calificacion }}</td>
+                    @php $cVal = (float)$historial->Calificacion; $cCol = $cVal >= 9 ? '#059669' : ($cVal >= 8 ? '#2563eb' : ($cVal >= 7 ? '#d97706' : '#dc2626')); @endphp
+                    <td style="text-align: center; font-weight: bold; color: {{ $cCol }};">{{ $historial->Calificacion }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -315,11 +321,15 @@
 
     <script>
         function setupPrint() {
-            // Buffer de tiempo asegurando carga de recursos
+            if (window !== window.top) return;
             setTimeout(function() {
                 window.print();
             }, 1000);
         }
+
+        window.addEventListener('afterprint', () => {
+            try { window.close(); } catch (e) {}
+        });
     </script>
 </body>
 </html>

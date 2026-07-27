@@ -34,7 +34,7 @@
         .btn-print { position: fixed; right: 18px; bottom: 18px; background:#10504B; color:#fff; border:none; border-radius: 999px; padding: 12px 18px; cursor:pointer; font-weight:700; }
     </style>
 </head>
-<body onload="setTimeout(() => window.print(), 50)">
+<body onload="if (window === window.top) setTimeout(() => window.print(), 50)">
 
     <button class="btn-print no-print" onclick="window.print()">{{ __('Imprimir / Guardar PDF') }}</button>
 

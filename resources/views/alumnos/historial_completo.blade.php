@@ -42,7 +42,7 @@
                             <button onclick="window.print()" class="btn-secondary">
                                 <i class="fa-solid fa-print"></i> Imprimir
                             </button>
-                            <a href="{{ route('alumno.expediente.pdf', $alumno->idAlumnos) }}" class="btn-primary" style="margin-left: 10px;">
+                            <a href="#" onclick="printViaIframe('{{ route('alumno.expediente.pdf', $alumno->idAlumnos) }}'); return false;" class="btn-primary" style="margin-left: 10px;">
                                 <i class="fa-solid fa-file-pdf"></i> PDF
                             </a>
                         </div>
@@ -60,8 +60,9 @@
                                     <div style="font-size: 1.3rem; font-weight: 700;">{{ number_format($historial->where('Calificacion', '>=', 70)->count(), 0) }}</div>
                                     <div style="font-size: 0.82rem; color: #2d4d51;">Materias Aprobadas</div>
                                 </div>
+                                @php $promH = $historial->avg('Calificacion'); $promColor = \App\Models\Alumno::getRiesgoColor($promH); @endphp
                                 <div style="background: #fff; padding: 10px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(16,80,75,0.15);">
-                                    <div style="font-size: 1.3rem; font-weight: 700;">{{ number_format($historial->avg('Calificacion'), 1) }}</div>
+                                    <div style="font-size: 1.3rem; font-weight: 700; color: {{ $promColor }};">{{ number_format($promH, 1) }}</div>
                                     <div style="font-size: 0.82rem; color: #2d4d51;">Promedio</div>
                                 </div>
                                 <div style="background: #fff; padding: 10px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(16,80,75,0.15);">
@@ -96,7 +97,8 @@
                                                 </td>
                                                 <td>{{ optional($registro->grupoMateria)->Maestro ?? $registro->Profesor }}</td>
                                                 <td>{{ optional(optional($registro->grupoMateria)->materia)->Cuatrimestre ?? 'N/A' }}</td>
-                                                <td>{{ number_format($registro->Calificacion, 1) }}</td>
+                                                @php $cVal = (float)$registro->Calificacion; $cCol = $cVal >= 9 ? '#059669' : ($cVal >= 8 ? '#2563eb' : ($cVal >= 7 ? '#d97706' : '#dc2626')); $cBg = $cVal >= 9 ? '#ecfdf5' : ($cVal >= 8 ? '#eff6ff' : ($cVal >= 7 ? '#fffbeb' : '#fef2f2')); @endphp
+                                                <td><span style="background:{{ $cBg }};color:{{ $cCol }};padding:4px 12px;border-radius:20px;font-weight:700;">{{ number_format($registro->Calificacion, 1) }}</span></td>
                                                 <td>{{ $registro->Ciclo ?? 'N/A' }}</td>
                                             </tr>
                                         @endforeach
@@ -115,9 +117,11 @@
                                     <div class="stat-value">{{ number_format($historial->where('Calificacion', '>=', 70)->count(), 0) }}</div>
                                     <div class="stat-label">Materias Aprobadas</div>
                                 </div>
+                                @php $promH2 = $historial->avg('Calificacion'); $promColor2 = \App\Models\Alumno::getRiesgoColor($promH2); $riesgoLabel = \App\Models\Alumno::getRiesgoStatus($promH2); @endphp
                                 <div class="stat-item">
-                                    <div class="stat-value">{{ number_format($historial->avg('Calificacion'), 1) }}</div>
+                                    <div class="stat-value" style="color:{{ $promColor2 }};">{{ number_format($promH2, 1) }}</div>
                                     <div class="stat-label">Promedio General</div>
+                                    <div style="font-size:12px;font-weight:600;margin-top:4px;color:{{ $promColor2 }};">{{ $riesgoLabel }}</div>
                                 </div>
                                 <div class="stat-item">
                                     <div class="stat-value">{{ number_format($historial->max('Calificacion'), 1) }}</div>
@@ -131,7 +135,7 @@
                             <h4>No hay historial académico registrado</h4>
                             <p>Este alumno aún no tiene calificaciones asignadas.</p>
                             @if(auth()->user()->role === 'tutor')
-                                <a href="{{ route('calificaciones.asignar', $alumno->idAlumnos) }}" class="btn-primary">
+                                <a href="{{ route('tutor.alumnos.calificaciones', [auth()->user()->tutor->idTutores ?? $alumno->tutor->idTutores, $alumno->idAlumnos]) }}" class="btn-primary">
                                     <i class="fa-solid fa-plus"></i> Asignar Calificaciones
                                 </a>
                             @endif

@@ -169,14 +169,15 @@
 
     <script>
         function setupPrint() {
-            // Un pequeño buffer de tiempo asegura que los estilos y fuentes se apliquen
+            if (window !== window.top) return;
             setTimeout(function() {
                 window.print();
             }, 800);
         }
 
-        // Si el usuario cierra o termina el diálogo de impresión, no cerramos la ventana
-        // automáticamente para permitir reintentos manuales si es necesario.
+        window.addEventListener('afterprint', () => {
+            try { window.close(); } catch (e) {}
+        });
     </script>
 
     <div class="header">
@@ -236,8 +237,9 @@
                 <tr>
                     <td>{{ $historial->Materia }}</td>
                     <td>{{ $historial->Ciclo }}</td>
-                    <td style="font-weight: bold; text-align: center;">{{ $historial->Calificacion }}</td>
-                    <td>{{ $historial->Calificacion >= 8 ? 'Aprobado' : ($historial->Calificacion >= 7 ? 'Regular' : 'No Aprobado') }}</td>
+                    @php $cVal = (float)$historial->Calificacion; $cCol = $cVal >= 9 ? '#059669' : ($cVal >= 8 ? '#2563eb' : ($cVal >= 7 ? '#d97706' : '#dc2626')); $sCol = $cVal >= 8 ? '#059669' : ($cVal >= 7 ? '#d97706' : '#dc2626'); @endphp
+                    <td style="font-weight: bold; text-align: center; color: {{ $cCol }};">{{ $historial->Calificacion }}</td>
+                    <td style="font-weight:600;color:{{ $sCol }};">{{ $cVal >= 8 ? 'Aprobado' : ($cVal >= 7 ? 'Regular' : 'No Aprobado') }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -247,7 +249,8 @@
             </tbody>
         </table>
         @if($alumno->promedio > 0)
-            <p style="text-align: right; font-weight: bold; margin-top: 5px;">Promedio General: {{ $alumno->promedio }}</p>
+            @php $promColor = \App\Models\Alumno::getRiesgoColor($alumno->promedio); @endphp
+            <p style="text-align: right; font-weight: bold; margin-top: 5px; color: {{ $promColor }};">Promedio General: {{ $alumno->promedio }}</p>
         @endif
     </section>
 

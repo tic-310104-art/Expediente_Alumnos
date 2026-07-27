@@ -34,7 +34,8 @@
                     </div>
                 </div>
                 <div class="student-status" style="background: #10504B; color: white;">
-                    Promedio General: <span>{{ number_format($alumno->historialAcademico->avg('Calificacion'), 1) }}</span>
+                    @php $promG = $alumno->historialAcademico->avg('Calificacion'); $promGColor = \App\Models\Alumno::getRiesgoColor($promG); @endphp
+                    Promedio General: <span style="color:{{ $promGColor }};font-weight:900;">{{ number_format($promG, 1) }}</span>
                 </div>
             </header>
 

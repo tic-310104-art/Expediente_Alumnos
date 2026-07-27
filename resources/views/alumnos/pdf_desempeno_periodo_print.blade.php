@@ -44,7 +44,7 @@
         .btn-print { position: fixed; right: 20px; bottom: 20px; background: #10504B; color: #fff; border: none; border-radius: 50px; padding: 12px 24px; cursor: pointer; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body onload="setTimeout(() => window.print(), 500)">
+<body onload="if (window === window.top) setTimeout(() => window.print(), 500)">
 
     <button class="btn-print no-print" onclick="window.print()">Imprimir Reporte</button>
 
@@ -132,5 +132,11 @@
             Este documento es un reporte informativo generado el {{ date('d/m/Y H:i') }}
         </div>
     </div>
+
+    <script>
+        window.addEventListener('afterprint', () => {
+            try { window.close(); } catch (e) {}
+        });
+    </script>
 </body>
 </html>

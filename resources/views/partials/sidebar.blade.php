@@ -7,44 +7,42 @@
     elseif($role === 'alumno') $title = __("Panel Alumno");
 @endphp
 
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <img src="{{ asset('imgs/utn.png') }}" alt="{{ __('Logo Institucional') }}" class="custom-sidebar-logo">
-        <span>{{ $title }}</span>
-    </div>
-    
-    <nav class="sidebar-nav">
-        {{-- SELECTOR DE IDIOMA Y MODO OSCURO --}}
-        <div class="nav-extra-controls" style="padding: 10px 25px; display: flex; gap: 15px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;">
-            <div class="language-selector" style="display: flex; gap: 5px;">
-                <a href="{{ route('set-locale', 'es') }}" title="Español" style="color: {{ app()->getLocale() == 'es' ? '#fff' : 'rgba(255,255,255,0.5)' }}; text-decoration: none; font-weight: bold; font-size: 14px;">ES</a>
-                <span style="color: rgba(255,255,255,0.3)">|</span>
-                <a href="{{ route('set-locale', 'en') }}" title="English" style="color: {{ app()->getLocale() == 'en' ? '#fff' : 'rgba(255,255,255,0.5)' }}; text-decoration: none; font-weight: bold; font-size: 14px;">EN</a>
-            </div>
-            <div class="dark-mode-toggle" style="margin-left: auto; display: flex; gap: 15px; align-items: center;">
-                @if(auth()->user()->role === 'admin')
-
-                <a class="notification-bell" href="{{ route('logs.index') }}" style="position: relative; cursor: pointer; display: inline-flex; text-decoration: none;">
-                    <i class="fa-solid fa-bell" style="color: rgba(255,255,255,0.8); font-size: 18px;"></i>
-                    @php
-                        $lastSeen = (int) (session('logs_last_seen_id') ?? 0);
-                        $newLogs = \App\Models\LogActivity::where('id','>', $lastSeen)->count();
-                    @endphp
-                    @if($newLogs > 0)
-                    <span style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;">{{ $newLogs }}</span>
-                    @endif
-                </a>
-                @endif
-                @if(auth()->user()->role === 'tutor')
-                <button id="calendar-toggle" class="btn-icon" style="color: rgba(255,255,255,0.8); background: none; border: none; cursor: pointer; font-size: 18px;">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </button>
-                @endif
-                <button id="theme-toggle" class="btn-icon" style="color: rgba(255,255,255,0.8); background: none; border: none; cursor: pointer; font-size: 18px;">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-            </div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="{{ asset('imgs/utn.png') }}" alt="{{ __('Logo Institucional') }}" class="custom-sidebar-logo">
+            <span>{{ $title }}</span>
         </div>
+        
+        <nav class="sidebar-nav">
+            <div class="sidebar-controls">
+                <div class="language-selector" style="display: flex; gap: 5px;">
+                    <a href="{{ route('set-locale', 'es') }}" title="Español" class="lang-link {{ app()->getLocale() == 'es' ? 'active' : '' }}">ES</a>
+                    <span class="lang-sep">|</span>
+                    <a href="{{ route('set-locale', 'en') }}" title="English" class="lang-link {{ app()->getLocale() == 'en' ? 'active' : '' }}">EN</a>
+                </div>
+                <div class="sidebar-actions">
+                    @if(auth()->user()->role === 'admin')
+                    <a class="sidebar-btn notification-bell" href="{{ route('logs.index') }}">
+                        <i class="fa-solid fa-bell"></i>
+                        @php
+                            $lastSeen = (int) (session('logs_last_seen_id') ?? 0);
+                            $newLogs = \App\Models\LogActivity::where('id','>', $lastSeen)->count();
+                        @endphp
+                        @if($newLogs > 0)
+                        <span class="notification-badge">{{ $newLogs }}</span>
+                        @endif
+                    </a>
+                    @endif
+                    @if(auth()->user()->role === 'tutor')
+                    <button id="calendar-toggle" class="sidebar-btn">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </button>
+                    @endif
+                    <button id="theme-toggle" class="sidebar-btn">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </div>
 
         {{-- MENU PARA ADMINISTRADOR --}}
         @if($role === 'admin')
@@ -235,6 +233,19 @@
 
                 document.body.appendChild(form);
                 form.submit();
+            };
+
+            // --- Impresión sin redirección (vía iframe oculto) ---
+            window.printViaIframe = function(url) {
+                const iframe = document.createElement('iframe');
+                iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+                iframe.onload = function() {
+                    setTimeout(function() {
+                        try { iframe.contentWindow.print(); } catch (e) {}
+                    }, 300);
+                };
+                document.body.appendChild(iframe);
+                iframe.src = url;
             };
         });
     </script>

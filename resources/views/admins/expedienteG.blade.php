@@ -26,18 +26,18 @@
                         <div class="change-photo-overlay">
                             <i class="fa-solid fa-camera"></i>
                         </div>
-                        <input type="file" id="profile-upload" style="display: none;" accept="image/*">
+                        <input type="file" id="profile-upload" style="display:none;" accept="image/*">
                     </div>
                     <div class="student-info">
                         <h1>{{ __('Administración General') }}</h1>
-                        <p class="student-id"><i class="fa-solid fa-shield-halved"></i> {{ __('Rol') }}: <strong>{{ __('Servicios Escolares') }}</strong></p>
-                        <p class="student-career"><i class="fa-solid fa-university"></i> {{ __('Universidad Tecnológica de Nayarit') }}</p>
+                        <p><i class="fa-solid fa-shield-halved"></i> {{ __('Rol') }}: <strong>{{ __('Servicios Escolares') }}</strong></p>
+                        <p style="font-size:14px;color:var(--text-muted);margin-top:2px;"><i class="fa-solid fa-university"></i> {{ __('Universidad Tecnológica de Nayarit') }}</p>
                     </div>
                 </div>
             </header>
 
             <div class="dashboard-grid">
-                <div class="card progress-card full-width">
+                <div class="card full-width">
                     <h3><i class="fa-solid fa-chart-line"></i> {{ __('Estadísticas Generales') }}</h3>
                     <div class="stats-container" style="margin-bottom: 0;">
                         <div class="stat-box">
@@ -60,11 +60,11 @@
                 </div>
 
                 <div class="card">
-                    <h3 style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleSection('alumnos-list', 'alumnos-icon')">
-                        <span style="display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-laptop-code"></i> {{ __('Alumnos Activos por Carrera') }}</span>
-                        <i id="alumnos-icon" class="fa-solid fa-chevron-down toggle-icon" style="font-size: 16px; color: var(--text-muted); transition: transform 0.3s; transform: rotate(180deg);"></i>
+                    <h3 class="toggle-header" onclick="toggleSection('alumnos-list', 'alumnos-icon')">
+                        <span><i class="fa-solid fa-laptop-code"></i> {{ __('Alumnos Activos por Carrera') }}</span>
+                        <i id="alumnos-icon" class="fa-solid fa-chevron-down toggle-icon" style="transform: rotate(180deg);"></i>
                     </h3>
-                    <ul class="info-list" id="alumnos-list" style="display: block;">
+                    <ul class="info-list" id="alumnos-list">
                         @foreach($carreras as $carrera)
                         <li><strong>{{ $carrera->Nombre }}:</strong> <span>{{ $carrera->total_alumnos }} {{ __('Alumnos') }}</span></li>
                         @endforeach
@@ -72,11 +72,11 @@
                 </div>
 
                  <div class="card">
-                    <h3 style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleSection('tutores-list', 'tutores-icon')">
-                        <span style="display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-chalkboard-user"></i> {{ __('Tutores por Carrera') }}</span>
-                        <i id="tutores-icon" class="fa-solid fa-chevron-down toggle-icon" style="font-size: 16px; color: var(--text-muted); transition: transform 0.3s; transform: rotate(180deg);"></i>
+                    <h3 class="toggle-header" onclick="toggleSection('tutores-list', 'tutores-icon')">
+                        <span><i class="fa-solid fa-chalkboard-user"></i> {{ __('Tutores por Carrera') }}</span>
+                        <i id="tutores-icon" class="fa-solid fa-chevron-down toggle-icon" style="transform: rotate(180deg);"></i>
                     </h3>
-                    <ul class="info-list" id="tutores-list" style="display: block;">
+                    <ul class="info-list" id="tutores-list">
                         @foreach($carreras as $carrera)
                         <li><strong>{{ $carrera->Nombre }}:</strong> <span>{{ $carrera->total_tutores }} {{ __('Tutores') }}</span></li>
                         @endforeach
@@ -87,16 +87,16 @@
                     <h3><i class="fa-solid fa-database"></i> {{ __('Respaldos Automatizados') }}</h3>
                     
                     @if($activeBackup)
-                        <div class="alert alert-success" style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary-color);">
-                            <div style="background: var(--primary-color); color: white; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <div class="backup-banner">
+                            <div class="backup-banner-icon">
                                 <i class="fa-solid fa-calendar-check"></i>
                             </div>
                             <div>
-                                <h4 style="margin: 0; font-size: 14px; color: var(--primary-color);">{{ __('Respaldo Agendado en el Sistema') }}</h4>
-                                <p style="margin: 3px 0 0 0; font-size: 13px; color: var(--text-main); line-height: 1.4;">
-                                    {{ __('Siguiente ejecución automática:') }} <strong style="color: var(--primary-color);">{{ \Carbon\Carbon::parse($activeBackup->scheduled_date)->format('d/m/Y') }}</strong> {{ __('a las') }} <strong>{{ $activeBackup->scheduled_time }}</strong>
+                                <h4 class="backup-banner-title">{{ __('Respaldo Agendado en el Sistema') }}</h4>
+                                <p class="backup-banner-text">
+                                    {{ __('Siguiente ejecución automática:') }} <strong>{{ \Carbon\Carbon::parse($activeBackup->scheduled_date)->format('d/m/Y') }}</strong> {{ __('a las') }} <strong>{{ $activeBackup->scheduled_time }}</strong>
                                     <br>
-                                    <span style="display: inline-block; margin-top: 4px; padding: 2px 8px; background: var(--border-color); border-radius: 4px; font-size: 11px; font-weight: 700; color: var(--text-main);">
+                                    <span class="backup-banner-chip">
                                         <i class="fa-solid fa-repeat"></i> {{ __('Frecuencia:') }} 
                                         @if($activeBackup->frequency == 'once') {{ __('Una sola vez') }}
                                         @elseif($activeBackup->frequency == '4_days') {{ __('Cada 4 días') }}
@@ -109,24 +109,24 @@
                         </div>
                     @endif
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
+                    <div class="backup-grid">
                         
-                        <div style="display: flex; flex-direction: column; gap: 25px;">
-                            <form id="form-schedule" action="{{ route('backup.schedule') }}" method="POST" style="background: var(--bg-color); padding: 20px; border-radius: 14px; border: 1px solid var(--border-color);">
+                        <div class="backup-card">
+                            <form id="form-schedule" action="{{ route('backup.schedule') }}" method="POST">
                                 @csrf
-                                <h4 style="margin: 0 0 15px 0; font-size: 14px; color: var(--primary-color); display: flex; align-items: center; gap: 8px;">
+                                <h4 class="backup-card-title">
                                     <i class="fa-solid fa-clock"></i> {{ __('Programar Nuevo Respaldo') }}
                                 </h4>
                                 <div class="form-group">
-                                    <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">{{ __('Fecha de inicio') }}</label>
+                                    <label class="backup-label">{{ __('Fecha de inicio') }}</label>
                                     <input type="date" name="backup_date" class="form-control" value="{{ date('Y-m-d') }}" required>
                                 </div>
-                                <div class="form-group" style="margin-top: 15px;">
-                                    <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">{{ __('Hora sugerida') }}</label>
+                                <div class="form-group" style="margin-top:15px;">
+                                    <label class="backup-label">{{ __('Hora sugerida') }}</label>
                                     <input type="time" name="backup_time" class="form-control" value="02:00" required>
                                 </div>
-                                <div class="form-group" style="margin-top: 15px;">
-                                    <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">{{ __('Periodicidad') }}</label>
+                                <div class="form-group" style="margin-top:15px;">
+                                    <label class="backup-label">{{ __('Periodicidad') }}</label>
                                     <select name="frequency" class="form-control" required>
                                         <option value="once">{{ __('Una sola vez (Hoy)') }}</option>
                                         <option value="4_days">{{ __('Cada 4 días') }}</option>
@@ -134,38 +134,38 @@
                                         <option value="monthly">{{ __('Cada mes') }}</option>
                                     </select>
                                 </div>
-                                <button type="button" id="btn-schedule" class="btn-primary" style="width: 100%; margin-top: 20px; display: flex; justify-content: center; gap: 8px; padding: 14px;">
+                                <button type="button" id="btn-schedule" class="btn-primary backup-submit">
                                     <i class="fa-solid fa-shield-halved"></i> {{ __('Aplicar Configuración') }}
                                 </button>
                             </form>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 25px;">
-                            <form id="form-manual-backup" action="{{ route('backup.manual') }}" method="POST" style="background: var(--bg-color); padding: 20px; border-radius: 14px; border: 1px solid var(--border-color);">
+                        <div class="backup-card">
+                            <form id="form-manual-backup" action="{{ route('backup.manual') }}" method="POST">
                                 @csrf
-                                <h4 style="margin: 0 0 15px 0; font-size: 14px; color: var(--primary-color); display: flex; align-items: center; gap: 8px;">
+                                <h4 class="backup-card-title">
                                     <i class="fa-solid fa-bolt"></i> {{ __('Respaldo Manual Inmediato') }}
                                 </h4>
-                                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+                                <p class="backup-card-text">
                                     {{ __('Genera un respaldo completo de la base de datos en este mismo momento.') }}
                                 </p>
-                                <button type="button" id="btn-manual-backup" class="btn-primary" style="width: 100%; display: flex; justify-content: center; gap: 8px; padding: 14px;">
+                                <button type="button" id="btn-manual-backup" class="btn-primary backup-submit">
                                     <i class="fa-solid fa-database"></i> {{ __('Ejecutar Respaldo Manual') }}
                                 </button>
                             </form>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 25px;">
-                            <form id="form-import" action="{{ route('backup.import') }}" method="POST" enctype="multipart/form-data" style="background: rgba(217, 119, 6, 0.05); padding: 20px; border-radius: 14px; border: 1px solid rgba(217, 119, 6, 0.2);">
+                        <div class="backup-card restore-card">
+                            <form id="form-import" action="{{ route('backup.import') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <h4 style="margin: 0 0 15px 0; font-size: 14px; color: #b45309; display: flex; align-items: center; gap: 8px;">
+                                <h4 class="backup-card-title" style="color:#b45309;">
                                     <i class="fa-solid fa-file-import"></i> {{ __('Restauración Manual') }}
                                 </h4>
                                 <div class="form-group">
-                                    <label style="font-size: 12px; font-weight: 700; color: #b45309; text-transform: uppercase;">{{ __('Seleccionar archivo .sql') }}</label>
-                                    <input type="file" name="backup_file" class="form-control" accept=".sql" required style="padding: 8px; border-color: rgba(217, 119, 6, 0.2);">
+                                    <label class="backup-label" style="color:#b45309;">{{ __('Seleccionar archivo .sql') }}</label>
+                                    <input type="file" name="backup_file" class="form-control" accept=".sql" required>
                                 </div>
-                                <button type="button" id="btn-import" class="btn-primary" style="width: 100%; margin-top: 20px; display: flex; justify-content: center; gap: 8px; background-color: #d97706; border-color: #d97706; padding: 14px;">
+                                <button type="button" id="btn-import" class="btn-primary backup-submit" style="background-color:#d97706;">
                                     <i class="fa-solid fa-shield-halved"></i> {{ __('Iniciar Restauración') }}
                                 </button>
                             </form>

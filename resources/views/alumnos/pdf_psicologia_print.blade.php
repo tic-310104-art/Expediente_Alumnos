@@ -40,6 +40,7 @@
 <body onload="setupPrint()">
     <script>
         function setupPrint() {
+            if (window !== window.top) return;
             setTimeout(function() {
                 window.print();
             }, 1000);

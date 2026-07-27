@@ -29,7 +29,7 @@
             </header>
 
             @if(session('success'))
-                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <div class="alert-success">
                     {{ session('success') }}
                 </div>
             @endif
@@ -50,15 +50,14 @@
                             <tbody>
                                 @foreach($carreras as $carrera)
                                 <tr>
-                                    <td><strong>{{ $carrera->Nombre }}</strong></td>
-                                    <td>
+                                    <td data-label="{{ __('Carrera') }}"><strong>{{ $carrera->Nombre }}</strong></td>
+                                    <td data-label="{{ __('Acciones') }}">
                                         <div class="action-buttons">
-                                            <a href="{{ route('materias.show', $carrera->idCarreras) }}" class="btn-icon btn-view" title="{{ __('Plan Educativo') }}" style="background-color: #10504B; color: white; display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 8px; text-decoration: none;">
+                                            <a href="{{ route('materias.show', $carrera->idCarreras) }}" class="btn-icon" title="{{ __('Plan Educativo') }}">
                                                  <i class="fa-solid fa-book-bookmark"></i>
                                             </a>
                                             <button type="button" class="btn-icon btn-edit" title="{{ __('Editar') }}" 
-                                                    onclick="showEditCarreraModal('{{ $carrera->idCarreras }}', '{{ $carrera->Nombre }}')"
-                                                    style="display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer;">
+                                                    onclick="showEditCarreraModal('{{ $carrera->idCarreras }}', '{{ $carrera->Nombre }}')">
                                                  <i class="fa-solid fa-pen"></i>
                                             </button>
                                             <button type="button" class="btn-icon btn-delete btn-delete-critical" 

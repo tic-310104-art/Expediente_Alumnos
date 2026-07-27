@@ -23,7 +23,7 @@
                     <h2>Iniciar Sesión</h2>
                     
                     @if ($errors->any())
-                        <div class="alert alert-danger" style="color: #f44336; margin-bottom: 20px; font-size: 0.9em;">
+                        <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>

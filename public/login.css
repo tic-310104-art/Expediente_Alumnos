@@ -107,11 +107,23 @@ body::after {
 
 h2 {
     text-align: center;
-    margin-top: 10px; /* Ajustado para que no choque con el logo */
+    margin-top: 10px;
     margin-bottom: 35px;
     font-weight: 600;
     color: #111;
     letter-spacing: -0.5px;
+}
+
+.alert-danger {
+    color: #f44336;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.alert-danger ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* Transición suave al cambiar de login a registro */
@@ -205,9 +217,17 @@ h2 {
 
 @media (max-width: 480px) {
     .auth-shell { width: calc(100vw - 20px); padding: 10px 0; }
-    .auth-visual { min-height: 180px; padding: 20px 16px; }
+    .auth-visual { display: none; }
     .auth-form { padding: 24px 16px; }
     h2 { font-size: 20px; margin-bottom: 25px; }
     .input-group { margin-bottom: 18px; }
     .input-group input { padding: 12px 10px; font-size: 14px; }
+}
+
+@media (max-width: 380px) {
+    .auth-form { padding: 18px 12px; }
+    h2 { font-size: 18px; margin-bottom: 20px; }
+    .input-group { margin-bottom: 14px; }
+    .input-group input { padding: 10px 8px; font-size: 13px; }
+    .btn { padding: 12px; font-size: 14px; }
 }

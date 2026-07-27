@@ -115,7 +115,7 @@
                         <input type="date" name="from" value="{{ request('from') }}" class="filter-input">
                         <input type="date" name="to" value="{{ request('to') }}" class="filter-input">
                         <button type="submit" class="btn-primary btn-inline">{{ __('Filtrar') }}</button>
-                        <a href="{{ route('logs.print', request()->query()) }}" target="_blank" class="btn-primary btn-inline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; background: #b45309; border-color: #b45309; color: white;">
+                        <a href="#" onclick="printViaIframe('{{ route('logs.print', request()->query()) }}'); return false;" class="btn-primary btn-inline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; background: #b45309; border-color: #b45309; color: white;">
                              <i class="fa-solid fa-print" style="margin-right: 8px;"></i> {{ __('Imprimir') }}
                         </a>
                         <a href="{{ route('logs.index') }}" class="btn-secondary btn-inline" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">{{ __('Limpiar') }}</a>

@@ -75,7 +75,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a class="btn-row-pdf" href="{{ route('alumno.pdf.asesorias.item', [$alumno->idAlumnos, $asesoria->idAsesoria]) }}" target="_blank">
+                                        <a class="btn-row-pdf" href="#" onclick="printViaIframe('{{ route('alumno.pdf.asesorias.item', [$alumno->idAlumnos, $asesoria->idAsesoria]) }}'); return false;">
                                             <i class="fa-solid fa-file-arrow-down"></i> PDF
                                         </a>
                                     </td>

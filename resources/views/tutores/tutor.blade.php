@@ -151,34 +151,6 @@
             </header>
 
             <div class="dashboard-grid">
-                <style>
-                    .at-risk-modal-item {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        padding: 12px;
-                        margin-bottom: 8px;
-                        background: #f8fafc;
-                        border-radius: 10px;
-                        border: 1px solid #e2e8f0;
-                        transition: all 0.2s;
-                        text-decoration: none;
-                        color: inherit;
-                    }
-                    .at-risk-modal-item:hover {
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                        transform: scale(1.01);
-                    }
-                    .dark-mode .at-risk-modal-item {
-                        background: #1e293b;
-                        border-color: #334155;
-                    }
-                    .dark-mode .at-risk-modal-item:hover {
-                        background: #334155;
-                    }
-                </style>
-
                 @if($tutor->grupos->count() > 0)
                 @foreach($tutor->grupos as $index => $grupo)
                 <div class="card full-width" style="margin-bottom: 20px;">
@@ -192,8 +164,7 @@
                         @php
                             $capacidad = $grupo->Cantidad_Alumnos ?? $grupo->alumnos->count();
                             $ocupados = $grupo->alumnos->count();
-                            $disponibles = max($capacidad - $ocupados, 0);
-                            $denominador = max($capacidad, 1);
+                            $denominador = max($ocupados, 1);
 
                             $rangosDef = [
                                 ['label' => '< 8', 'min' => 0, 'max' => 8, 'color' => '#dc2626'],
@@ -227,9 +198,6 @@
                                 <div class="enhanced-chart-capacity">
                                     <span><i class="fa-solid fa-users"></i> <strong>{{ __('Cupo') }}:</strong> {{ $capacidad }}</span>
                                     <span><strong>{{ __('Asignados') }}:</strong> {{ $ocupados }}</span>
-                                    @if($disponibles > 0)
-                                    <span style="color: var(--text-muted);"><strong>{{ __('Disponibles') }}:</strong> {{ $disponibles }}</span>
-                                    @endif
                                 </div>
                                 <button class="chart-toggle" type="button" title="{{ __('Minimizar gráfica') }}">
                                     <i class="fa-solid fa-chevron-up"></i>
@@ -265,18 +233,6 @@
                                         </div>
                                     </div>
                                     @endforeach
-                                    @if($disponibles > 0)
-                                    <div class="vbar-item">
-                                        <div class="vbar-value" style="color: var(--text-muted);">{{ $disponibles }}</div>
-                                        <div class="vbar-track">
-                                            <div class="vbar-fill" style="height: {{ min(100, ($disponibles / $denominador) * 100) }}%; background: #e2e8f0;"></div>
-                                        </div>
-                                        <div class="vbar-label">{{ __('Vac.') }}</div>
-                                        <div class="vbar-hover-popup">
-                                            <div class="vbar-hover-empty">{{ __('Espacios disponibles') }}</div>
-                                        </div>
-                                    </div>
-                                    @endif
                                 </div>
                                 @if($sinDatos > 0)
                                 <div class="enhanced-chart-footer">
@@ -338,7 +294,7 @@
                                                 <a href="{{ route('tutor.asesorias', $tutor->idTutores) }}" class="btn-accion" style="background:#f59e0b;" title="{{ __('Agendar Asesoría') }}">
                                                     <i class="fa-solid fa-chalkboard-user"></i>
                                                 </a>
-                                                <a href="{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}" target="_blank" class="btn-accion" style="background:#0d9488;" title="{{ __('Descargar Resumen PDF') }}">
+                                                <a href="#" onclick="printViaIframe('{{ route('alumno.pdf.resumen', $alumno->idAlumnos) }}'); return false;" class="btn-accion" style="background:#0d9488;" title="{{ __('Descargar Resumen PDF') }}">
                                                     <i class="fa-solid fa-file-pdf"></i>
                                                 </a>
                                             </div>
@@ -368,341 +324,25 @@
     </div>
 
     {{-- Modal del Calendario --}}
-    <div id="calendar-modal" class="calendar-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
-        <div class="calendar-modal-content" style="background: var(--card-bg); border-radius: 16px; width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 25px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <button id="calendar-modal-close" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); z-index: 10;">
+    <div id="calendar-modal" class="calendar-modal-overlay" style="display:none;">
+        <div class="calendar-modal-content">
+            <button id="calendar-modal-close" class="calendar-modal-close">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 style="margin-bottom: 15px; color: var(--text-main);"><i class="fa-solid fa-calendar-days"></i> {{ __('Calendario de Tutorías') }}</h3>
-            <div id='calendar' style="padding: 10px; background: #fff; border-radius: 8px;"></div>
+            <h3 style="margin-bottom:15px;color:var(--text-main);"><i class="fa-solid fa-calendar-days"></i> {{ __('Calendario de Tutorías') }}</h3>
+            <div id='calendar' style="padding:10px;background:#fff;border-radius:8px;"></div>
         </div>
     </div>
 
     <style>
-        .calendar-modal-overlay {
-            animation: fadeIn 0.2s ease;
-        }
-        .calendar-modal-content {
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        body.dark-mode .calendar-modal-content {
-            background: #1e293b;
-        }
-
-        .card-collapsible-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            user-select: none;
-            padding: 4px 0;
-        }
-        .card-collapsible-header h3 {
-            margin: 0;
-        }
-        .card-collapsible-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--card-bg);
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        .card-collapsible-toggle:hover {
-            background: var(--bg-color);
-            color: var(--text-main);
-            border-color: var(--primary-color);
-        }
-        .card-collapsible-toggle i {
-            transition: transform 0.3s ease;
-        }
-        .card-collapsible-toggle.collapsed i {
-            transform: rotate(180deg);
-        }
-        .card-collapsible-body {
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
-            max-height: 5000px;
-            opacity: 1;
-            padding-top: 8px;
-        }
-        .card-collapsible-body.collapsed {
-            max-height: 0;
-            opacity: 0;
-            padding-top: 0;
-        }
-
-        .enhanced-chart {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 14px;
-        }
-        .enhanced-chart-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .enhanced-chart-capacity {
-            display: flex;
-            gap: 20px;
-            font-size: 0.82rem;
-            color: var(--text-main);
-        }
-        .enhanced-chart-capacity i {
-            margin-right: 4px;
-            color: var(--primary-color);
-        }
-        .chart-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--card-bg);
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .chart-toggle:hover {
-            background: var(--bg-color);
-            color: var(--text-main);
-            border-color: var(--primary-color);
-        }
-        .chart-toggle.collapsed i {
-            transform: rotate(180deg);
-        }
-        .chart-toggle i {
-            transition: transform 0.3s ease;
-        }
-        .enhanced-chart-body {
-            overflow: hidden;
-            transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.3s ease;
-            max-height: 600px;
-            opacity: 1;
-            padding-top: 14px;
-        }
-        .enhanced-chart-body.collapsed {
-            max-height: 0;
-            opacity: 0;
-            padding-top: 0;
-        }
-        /* Estilos de gráfica de barras verticales */
-        .vbar-container {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px 10px;
-            flex-wrap: wrap;
-        }
-        .vbar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            min-width: 50px;
-            cursor: pointer;
-            position: relative;
-        }
-        .vbar-item:hover .vbar-fill {
-            filter: brightness(1.1);
-        }
-        .vbar-item:active .vbar-fill {
-            filter: brightness(0.9);
-        }
-        .vbar-value {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--text-main);
-            text-align: center;
-        }
-        .vbar-track {
-            width: 40px;
-            height: 150px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column-reverse;
-            position: relative;
-        }
-        .dark-mode .vbar-track {
-            background: rgba(255,255,255,0.07);
-        }
-        .vbar-fill {
-            width: 100%;
-            border-radius: 8px;
-            transition: height 0.8s ease;
-            min-height: 4px;
-        }
-        .vbar-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-align: center;
-            margin-top: 2px;
-        }
-        .vbar-hover-popup {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 8px 10px;
-            min-width: 180px;
-            max-width: 220px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            z-index: 20;
-            pointer-events: none;
-            margin-bottom: 10px;
-        }
-        .vbar-item:hover .vbar-hover-popup {
-            opacity: 1;
-            visibility: visible;
-        }
-        .dark-mode .vbar-hover-popup {
-            background: #1e293b;
-            border-color: #334155;
-        }
-        .vbar-hover-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 3px 0;
-            font-size: 0.75rem;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .dark-mode .vbar-hover-item {
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-        .vbar-hover-item:last-child {
-            border-bottom: none;
-        }
-        .vbar-hover-name {
-            font-weight: 600;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 120px;
-        }
-        .vbar-hover-prom {
-            font-weight: 800;
-            font-size: 0.7rem;
-            margin-left: 8px;
-            flex-shrink: 0;
-        }
-        .vbar-hover-empty {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 4px 0;
-        }
-        .vbar-hover-more {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-align: center;
-            padding-top: 4px;
-            font-weight: 700;
-        }
-        .enhanced-chart-footer {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-        .enhanced-chart-footer i {
-            color: #f59e0b;
-        }
-
-        .acciones-group {
-            display: flex;
-            gap: 4px;
-            flex-wrap: nowrap;
-        }
-        .btn-accion {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 12px;
-            transition: all 0.2s;
-            border: none;
-        }
-        .btn-accion:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .btn-accion i {
-            font-size: 13px;
-        }
-        .profile-img-container {
-            position: relative;
-        }
-        .profile-delete-btn {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: 2px solid var(--card-bg);
-            background: #dc2626;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            z-index: 5;
-            padding: 0;
-            line-height: 1;
-        }
-        .profile-delete-btn:hover {
-            background: #b91c1c;
-            transform: scale(1.1);
-        }
-        .profile-delete-btn i {
-            font-size: 12px;
-        }
         @media (max-width: 480px) {
-            .acciones-group { flex-wrap: wrap; gap: 3px; }
-            .btn-accion { width: 26px; height: 26px; font-size: 10px; }
-            .btn-accion i { font-size: 11px; }
             .vbar-container { gap: 10px; padding: 10px 5px; }
             .vbar-hover-popup { min-width: 140px; max-width: 180px; left: auto; right: 0; }
-            .enhanced-chart-capacity { gap: 10px; font-size: 0.75rem; flex-wrap: wrap; }
+        }
+        @media (max-width: 380px) {
+            .btn-accion { width: 26px; height: 26px; font-size: 11px; }
+            .btn-accion i { font-size: 11px; }
+            .acciones-group { gap: 2px; }
         }
     </style>
     

@@ -28,7 +28,7 @@
             </header>
 
             @if(session('success'))
-                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <div class="alert-success">
                     {{ session('success') }}
                 </div>
             @endif
@@ -68,8 +68,8 @@
                                 <label>Motivo de la Cita</label>
                                 <input type="text" name="Motivo" class="form-control" placeholder="Ej. Revisión de desempeño académico..." required>
                             </div>
-                            <div class="form-actions" style="grid-column: 1 / -1;">
-                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fa-solid fa-calendar-check"></i> Agendar Cita</button>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Agendar Cita</button>
                             </div>
                         </div>
                     </form>
@@ -90,23 +90,21 @@
                             <tbody>
                                 @forelse($citas as $cita)
                                 <tr>
-                                    <td><strong>{{ \Carbon\Carbon::parse($cita->Fecha)->format('d/m/Y h:i A') }}</strong></td>
-                                    <td>{{ $cita->alumno ? $cita->alumno->Nombre . ' ' . $cita->alumno->Apellido : 'General' }}</td>
-                                    <td>{{ $cita->Motivo }}</td>
-                                    <td>
-                                        <div class="action-buttons" style="display: flex; gap: 10px;">
-                                            <a href="{{ route('citas-tutoria.edit', $cita->idCitas) }}" class="btn-primary" 
-                                               style="padding:5px 12px; font-size:12px; text-decoration: none; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
-                                               <i class="fa-solid fa-pen"></i> Reprogramar
+                                    <td data-label="{{ __('Fecha y Hora') }}"><strong>{{ \Carbon\Carbon::parse($cita->Fecha)->format('d/m/Y h:i A') }}</strong></td>
+                                    <td data-label="{{ __('Alumno') }}">{{ $cita->alumno ? $cita->alumno->Nombre . ' ' . $cita->alumno->Apellido : 'General' }}</td>
+                                    <td data-label="{{ __('Motivo') }}">{{ $cita->Motivo }}</td>
+                                    <td data-label="{{ __('Acciones') }}">
+                                        <div class="action-buttons">
+                                            <a href="{{ route('citas-tutoria.edit', $cita->idCitas) }}" class="btn-sm">
+                                               <i class="fa-solid fa-pen"></i> {{ __('Reprogramar') }}
                                             </a>
                                             
                                             <form action="{{ route('citas-tutoria.destroy', $cita->idCitas) }}" method="POST" 
-                                                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta cita?');" style="display:inline;">
+                                                  onsubmit="return confirm('{{ __("¿Estás seguro de que deseas eliminar esta cita?") }}');" class="inline-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn-secondary" 
-                                                        style="padding:5px 12px; font-size:12px; background-color: #991b1b; color: white; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer;">
-                                                   <i class="fa-solid fa-trash-can"></i> Eliminar
+                                                <button type="submit" class="btn-sm btn-danger">
+                                                   <i class="fa-solid fa-trash-can"></i> {{ __('Eliminar') }}
                                                 </button>
                                             </form>
                                         </div>
@@ -114,7 +112,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">No se encontraron citas de tutorías agendadas.</td>
+                                    <td colspan="4" style="text-align: center;">No se encontraron citas de tutorías agendadas.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

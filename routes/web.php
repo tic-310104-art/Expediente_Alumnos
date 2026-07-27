@@ -30,7 +30,7 @@ Route::post('/sesion', [AuthController::class, 'login'])->name('login.post');
 
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['GET', 'POST'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // --- RUTAS PROTEGIDAS POR AUTENTICACIÓN ---
 Route::middleware('auth')->group(function () {

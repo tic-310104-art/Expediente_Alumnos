@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\PeriodoHelper;
 use App\Models\Alumno;
 use App\Models\Grupo;
 use App\Models\GrupoMateria;
@@ -32,7 +33,12 @@ class CalificacionController extends Controller
             ->where('idGrupos', $alumno->Grupos_id)
             ->get();
 
-        return view('tutores.asignar_calificaciones', compact('alumno', 'cargaAcademica'));
+        $periodoActual = PeriodoHelper::getCurrentPeriodName();
+        $cuatrimestre = PeriodoHelper::extractCuatrimestreFromGroup($alumno->grupo->Grupo)
+            ?? (int) ($alumno->Cuatrimestre ?? 0)
+            ?: 1;
+
+        return view('tutores.asignar_calificaciones', compact('alumno', 'cargaAcademica', 'periodoActual', 'cuatrimestre'));
     }
 
     /**

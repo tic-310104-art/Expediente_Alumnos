@@ -19,7 +19,7 @@
             <h2>{{ __('Registrar Cuenta') }}</h2>
 
             @if ($errors->any())
-                <div class="alert alert-danger" style="color: #f44336; margin-bottom: 20px; font-size: 0.8em; text-align: left;">
+                <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -30,7 +30,7 @@
 
             <form action="{{ route('register.post') }}" method="POST">
                 @csrf
-                <div style="display: flex; gap: 10px;">
+                <div class="name-row">
                     <div class="input-group">
                         <input type="text" name="Nombre" id="reg-nombre" required placeholder=" " value="{{ old('Nombre') }}">
                         <label for="reg-nombre">{{ __('Nombre(s)') }}</label>

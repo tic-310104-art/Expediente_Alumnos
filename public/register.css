@@ -58,11 +58,24 @@ body {
 
 h2 { 
     text-align: center;
-    margin-top: 10px; /* Ajustado por el logo */
+    margin-top: 10px;
     margin-bottom: 35px;
     font-weight: 600; 
     color: #0f172a; 
     letter-spacing: 0.01em;
+}
+
+.alert-danger {
+    color: #f44336;
+    margin-bottom: 20px;
+    font-size: 0.8em;
+    text-align: left;
+}
+
+.alert-danger ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* --- CAMPOS DE TEXTO --- */
@@ -159,6 +172,7 @@ h2 {
     h2 { font-size: 20px; margin-bottom: 25px; }
     .input-group { margin-bottom: 18px; }
     .input-group input { padding: 12px 10px; font-size: 14px; }
+    .name-row { flex-direction: column; gap: 0; }
 }
 
 @media (prefers-color-scheme: dark) {

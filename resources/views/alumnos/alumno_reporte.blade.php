@@ -127,15 +127,15 @@
                     @endphp
                     <div class="stats-container" style="display: flex; gap: 20px; justify-content: space-around; margin-top:15px;">
                         <div class="stat-box" style="text-align: center;">
-                            <span class="stat-value" style="font-size: 2em; display: block; font-weight: 800; color: #10504B;">{{ $promedioGeneral ? number_format($promedioGeneral, 1) : 'N/A' }}</span>
+                            <span style="font-size:2em;display:block;font-weight:800;margin-bottom:4px;color:{{ $colorRiesgo }};">{{ $promedioGeneral ? number_format($promedioGeneral, 1) : 'N/A' }}</span>
                             <span class="stat-label" style="color: #64748b; font-size: 13px; font-weight: 600;">{{ __('Promedio General') }}</span>
                         </div>
                         <div class="stat-box" style="text-align: center;">
-                            <span class="stat-value" style="font-size: 2em; display: block; font-weight: 800; color: #10504B;">{{ $materiasTotales }}</span>
+                            <span style="font-size:2em;display:block;font-weight:800;margin-bottom:4px;color:#10504B;">{{ $materiasTotales }}</span>
                             <span class="stat-label" style="color: #64748b; font-size: 13px; font-weight: 600;">{{ __('Materias Cursadas') }}</span>
                         </div>
                         <div class="stat-box" style="text-align: center;">
-                            <span class="stat-value" style="font-size: 1.5em; display: block; font-weight: 800; color: {{ $colorRiesgo }};">
+                            <span style="font-size:1.5em;display:block;font-weight:800;margin-bottom:4px;color:{{ $colorRiesgo }};">
                                 {{ $riesgoGeneral }}
                             </span>
                             <span class="stat-label" style="color: #64748b; font-size: 13px; font-weight: 600;">{{ __('Nivel de Riesgo Global') }}</span>
@@ -143,6 +143,50 @@
                     </div>
                 </div>
 
+            </div>
+
+            <div class="card full-width">
+                <h3><i class="fa-solid fa-chart-line"></i> {{ __('Detalle de Calificaciones') }}</h3>
+                <div class="table-responsive" style="border-radius:8px;border:1px solid var(--border-color);">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Materia') }}</th>
+                                <th>{{ __('Maestro') }}</th>
+                                <th style="text-align:center;">{{ __('Calif.') }}</th>
+                                <th style="text-align:center;">{{ __('Periodo') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($alumno->historialAcademico as $h)
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:600;">{{ $h->Materia }}</div>
+                                    </td>
+                                    <td style="color:var(--text-muted);font-size:13px;">{{ $h->Profesor }}</td>
+                                    <td style="text-align:center;">
+                                        @php
+                                            $c = (float)$h->Calificacion;
+                                            $cColor = $c >= 9 ? '#059669' : ($c >= 8 ? '#2563eb' : ($c >= 7 ? '#d97706' : '#dc2626'));
+                                            $cBg = $c >= 9 ? '#ecfdf5' : ($c >= 8 ? '#eff6ff' : ($c >= 7 ? '#fffbeb' : '#fef2f2'));
+                                        @endphp
+                                        <span class="grade-badge" style="background:{{ $cBg }};color:{{ $cColor }};border-color:{{ $cColor }}20;">
+                                            {{ $h->Calificacion }}
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;color:var(--text-muted);font-size:12px;">{{ $h->Ciclo ?? 'N/A' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" style="text-align:center;padding:30px;color:var(--text-muted);">
+                                        <i class="fa-solid fa-inbox" style="display:block;font-size:24px;margin-bottom:10px;opacity:0.5;"></i>
+                                        {{ __('Aún no hay calificaciones registradas.') }}
+                                    </td>
+                                </tr>
+                            @endforelse
+                          </tbody>
+                      </table>
+                  </div>
             </div>
 
             <div class="card full-width">
@@ -173,15 +217,15 @@
                                         </div>
                                     </td>
                                     <td style="text-align: center; color: #64748b;">{{ $data['materias_count'] }} {{ __('Materias') }}</td>
+                                    @php 
+                                        $riesgoLabel = $data['riesgo'];
+                                        $riesgoColorPeriodo = \App\Models\Alumno::getRiesgoColor($data['promedio']);
+                                    @endphp
                                     <td style="text-align: center;">
-                                        <span style="font-weight: 800; color: #10504B; font-size: 15px;">{{ $data['promedio'] }}</span>
+                                        <span style="font-weight: 800; color: {{ $riesgoColorPeriodo }}; font-size: 15px;">{{ $data['promedio'] }}</span>
                                     </td>
                                     <td style="text-align: center;">
-                                        @php 
-                                            $riesgoLabel = $data['riesgo'];
-                                            $riesgoColor = \App\Models\Alumno::getRiesgoColor($data['promedio']);
-                                        @endphp
-                                        <span style="background: {{ $riesgoColor }}15; color: {{ $riesgoColor }}; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid {{ $riesgoColor }}30;">
+                                        <span style="background: {{ $riesgoColorPeriodo }}15; color: {{ $riesgoColorPeriodo }}; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid {{ $riesgoColorPeriodo }}30;">
                                             @if($riesgoLabel == 'Riesgo Extremo' || $riesgoLabel == 'Riesgo Medio')
                                                 <i class="fa-solid fa-triangle-exclamation"></i>
                                             @else
@@ -191,7 +235,7 @@
                                         </span>
                                     </td>
                                     <td style="text-align: center;">
-                                        <a href="{{ route('alumno.pdf.desempeno.periodo', ['id' => $alumno->idAlumnos, 'periodo' => $ciclo]) }}" target="_blank" class="btn-download-premium" style="padding: 8px 15px; font-size: 12px; border-radius: 10px; gap: 6px;">
+                                        <a href="#" onclick="printViaIframe('{{ route('alumno.pdf.desempeno.periodo', ['id' => $alumno->idAlumnos, 'periodo' => $ciclo]) }}'); return false;" class="btn-download-premium" style="padding: 8px 15px; font-size: 12px; border-radius: 10px; gap: 6px;">
                                             <i class="fa-solid fa-file-arrow-down" style="font-size: 14px;"></i> {{ __('Descargar PDF') }}
                                         </a>
                                     </td>

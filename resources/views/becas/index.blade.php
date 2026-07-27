@@ -20,7 +20,7 @@
             </header>
 
             @if(session('success'))
-                <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <div class="alert-success">
                     {{ session('success') }}
                 </div>
             @endif
@@ -91,20 +91,20 @@
                     </thead>
                     <tbody>
                         @foreach($becas as $beca)
-                        <tr>
-                            <td>{{ $beca->Nombre }}</td>
-                            <td>${{ number_format($beca->Monto, 2) }}</td>
-                            <td>
+                            <tr>
+                                <td data-label="{{ __('Nombre') }}">{{ $beca->Nombre }}</td>
+                                <td data-label="{{ __('Monto') }}">${{ number_format($beca->Monto, 2) }}</td>
+                                <td data-label="{{ __('Alumnos') }}">
                                 <a href="{{ route('becas.show', $beca->idBecas) }}" style="text-decoration: none; font-weight: 500; color: #10504B;">
                                     {{ $beca->alumnos_count }} {{ __('Ver') }} <i class="fa-solid fa-arrow-right-to-bracket" style="font-size: 0.8rem;"></i>
                                 </a>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 8px;">
-                                    <a href="{{ route('becas.edit', $beca->idBecas) }}" class="btn-icon" style="color: #4b5563; background: #e5e7eb; display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 8px; text-decoration: none;" title="{{ __('Editar beca') }}">
+                                <div class="action-buttons">
+                                    <a href="{{ route('becas.edit', $beca->idBecas) }}" class="btn-icon btn-edit" title="{{ __('Editar beca') }}">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
-                                    <a href="{{ route('becas.show', $beca->idBecas) }}" class="btn-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 8px; text-decoration: none; background: #e0f2fe; color: #0284c7;" title="{{ __('Gestionar asignaciones') }}">
+                                    <a href="{{ route('becas.show', $beca->idBecas) }}" class="btn-icon" title="{{ __('Gestionar asignaciones') }}">
                                         <i class="fa-solid fa-users-gear"></i>
                                     </a>
                                     <button type="button" class="btn-icon btn-delete btn-delete-critical" 

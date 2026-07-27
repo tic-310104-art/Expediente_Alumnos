@@ -48,7 +48,16 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">{{ __('Periodo Escolar') }}</label>
-                                    <input type="text" name="Periodo" class="form-control" placeholder="Ej. SEP-DIC 2026" required style="max-width: 300px;">
+                                    <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                        <span style="font-size: 22px; font-weight: 800; color: #10504B; letter-spacing: 1px;">
+                                            <i class="fa-solid fa-calendar" style="font-size: 16px; opacity: 0.7;"></i>
+                                            {{ $periodoActual }}
+                                        </span>
+                                        <span style="background: #e2e8f0; color: #475569; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;">
+                                            <i class="fa-solid fa-layer-group"></i> {{ $cuatrimestre }}° Cuatrimestre
+                                        </span>
+                                    </div>
+                                    <input type="hidden" name="Periodo" value="{{ $periodoActual }}">
                                 </div>
                             </div>
                         </div>
@@ -67,17 +76,17 @@
                                     @forelse($cargaAcademica as $carga)
                                         <tr>
                                             <td>
-                                                <div style="font-weight: 700; color: #1e293b;">{{ $carga->materia->Nombre }}</div>
+                                                <div style="font-weight: 700; color: var(--text-main);">{{ $carga->materia->Nombre }}</div>
                                             </td>
-                                            <td style="color: #64748b;">{{ $carga->Maestro ?? __('Sin Asignar') }}</td>
+                                            <td style="color: var(--text-muted);">{{ $carga->Maestro ?? __('Sin Asignar') }}</td>
                                             <td>
                                                 <input type="number" step="0.1" min="0" max="10" 
                                                        name="calificaciones[{{ $carga->id }}]" 
                                                        class="form-control" 
-                                                       style="text-align: center; font-weight: 700; color: #10504B;"
+                                                       style="text-align: center; font-weight: 700; color: var(--primary-color);"
                                                        placeholder="0.0">
                                             </td>
-                                            <td style="font-size: 12px; color: #94a3b8;">{{ $carga->Horario ?? __('Sin Horario') }}</td>
+                                            <td style="font-size: 12px; color: var(--text-muted);">{{ $carga->Horario ?? __('Sin Horario') }}</td>
                                         </tr>
                                     @empty
                                         <tr>

@@ -140,10 +140,15 @@
 <body onload="setupPrint()">
     <script>
         function setupPrint() {
+            if (window !== window.top) return;
             setTimeout(function() {
                 window.print();
             }, 1000);
         }
+
+        window.addEventListener('afterprint', () => {
+            try { window.close(); } catch (e) {}
+        });
     </script>
 
     <button class="btn-print no-print" onclick="window.print()">

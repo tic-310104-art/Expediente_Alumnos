@@ -41,7 +41,7 @@
 
     <script>
         function setupPrint() {
-            // Buffer de tiempo asegurando carga de recursos
+            if (window !== window.top) return;
             setTimeout(function() {
                 window.print();
             }, 1200);
@@ -71,6 +71,7 @@
             ->filter(fn($v) => $v !== null);
         $avg = $califs->count() ? round($califs->avg(), 1) : null;
         $statusByAvg = $avg !== null ? \App\Models\Alumno::getRiesgoStatus($avg) : 'N/A';
+        $statusByAvgColor = $avg !== null ? \App\Models\Alumno::getRiesgoColor($avg) : '#4b5563';
 @endphp
 
     <div class="info-grid">
@@ -92,11 +93,11 @@
         </div>
         <div class="info-item">
             <label>Promedio Final</label>
-            <span>{{ $avg !== null ? $avg : 'N/A' }}</span>
+            <span style="color:{{ $statusByAvgColor }};font-weight:900;">{{ $avg !== null ? $avg : 'N/A' }}</span>
         </div>
         <div class="info-item">
             <label>Estatus (por promedio)</label>
-            <span>{{ $statusByAvg }}</span>
+            <span style="color:{{ $statusByAvgColor }};font-weight:700;">{{ $statusByAvg }}</span>
         </div>
     </div>
 
@@ -116,7 +117,8 @@
                     <tr>
                         <td>{{ $h->Materia }}</td>
                         <td>{{ $h->Profesor }}</td>
-                        <td>{{ $h->Calificacion }}</td>
+                        @php $cVal = (float)$h->Calificacion; $cCol = $cVal >= 9 ? '#059669' : ($cVal >= 8 ? '#2563eb' : ($cVal >= 7 ? '#d97706' : '#dc2626')); @endphp
+                        <td style="font-weight:700;color:{{ $cCol }};">{{ $h->Calificacion }}</td>
                         <td>{{ $h->Ciclo ?? 'N/A' }}</td>
                     </tr>
                 @empty
