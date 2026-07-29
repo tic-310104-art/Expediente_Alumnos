@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- FullCalendar CDN -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
@@ -164,7 +165,6 @@
                         @php
                             $capacidad = $grupo->Cantidad_Alumnos ?? $grupo->alumnos->count();
                             $ocupados = $grupo->alumnos->count();
-                            $denominador = max($ocupados, 1);
 
                             $rangosDef = [
                                 ['label' => '< 8', 'min' => 0, 'max' => 8, 'color' => '#dc2626'],
@@ -204,36 +204,8 @@
                                 </button>
                             </div>
                             <div class="enhanced-chart-body">
-                                <div class="vbar-container">
-                                    @php
-                                        $tubeData = $distribucion->values()->all();
-                                    @endphp
-                                    @foreach($tubeData as $idx => $tube)
-                                    <div class="vbar-item" onclick="showTubeAlumnos(this)" data-alumnos='{{ json_encode($tube['alumnos']) }}' data-label="{{ $tube['label'] }}" data-color="{{ $tube['color'] }}">
-                                        <div class="vbar-value">{{ $tube['count'] }}</div>
-                                        <div class="vbar-track">
-                                            @if($tube['count'] > 0)
-                                            <div class="vbar-fill" style="height: {{ min(100, ($tube['count'] / $denominador) * 100) }}%; background: {{ $tube['color'] }};"></div>
-                                            @endif
-                                        </div>
-                                        <div class="vbar-label">{{ $tube['label'] }}</div>
-                                        <div class="vbar-hover-popup">
-                                            @php $alumnosColl = $tube['alumnos']; $maxHover = 6; @endphp
-                                            @forelse($alumnosColl->take($maxHover) as $a)
-                                            <div class="vbar-hover-item">
-                                                <span class="vbar-hover-name">{{ $a['Nombre'] }} {{ $a['Apellido'] }}</span>
-                                                <span class="vbar-hover-prom" style="color: {{ $a['promedio'] < 8 ? '#dc2626' : ($a['promedio'] < 8.5 ? '#f59e0b' : '#059669') }}">{{ number_format($a['promedio'], 1) }}</span>
-                                            </div>
-                                            @empty
-                                            <div class="vbar-hover-empty">{{ __('Sin alumnos') }}</div>
-                                            @endforelse
-                                            @if($alumnosColl->count() > $maxHover)
-                                            <div class="vbar-hover-more">+{{ $alumnosColl->count() - $maxHover }} {{ __('más') }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
+                                @php $chartId = 'chart-' . $grupo->idGrupos . '-' . $index; @endphp
+                                <canvas id="{{ $chartId }}" style="width: 100%;"></canvas>
                                 @if($sinDatos > 0)
                                 <div class="enhanced-chart-footer">
                                     <i class="fa-solid fa-circle-exclamation"></i> {{ $sinDatos }} {{ __('sin calificaciones') }}
@@ -241,6 +213,132 @@
                                 @endif
                             </div>
                         </div>
+
+                        @php
+                            $chartData = $distribucion->values()->map(fn($r) => [
+                                'label' => $r['label'],
+                                'count' => $r['count'],
+                                'color' => $r['color'],
+                                'alumnos' => $r['alumnos'],
+                            ]);
+                        @endphp
+                        <script>
+                            (function(){
+                                var ctx = document.getElementById('{{ $chartId }}').getContext('2d');
+                                var chartData = @json($chartData);
+                                var labels = chartData.map(function(d) { return d.label; });
+                                var counts = chartData.map(function(d) { return d.count; });
+                                var colorsData = chartData.map(function(d) { return d.color; });
+                                var alumnosData = chartData.map(function(d) { return d.alumnos; });
+
+                                Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+                                function chartThemeColors() {
+                                    var isDark = document.body.classList.contains('dark-mode');
+                                    return {
+                                        textColor: isDark ? '#f1f5f9' : '#2d3748',
+                                        gridColor: isDark ? '#334155' : '#e2e8f0'
+                                    };
+                                }
+
+                                var theme = chartThemeColors();
+
+                                var chart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            data: counts,
+                                            backgroundColor: colorsData,
+                                            borderRadius: 6,
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        return context.parsed.y + ' {{ __("alumnos") }}';
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                ticks: {
+                                                    stepSize: 1,
+                                                    precision: 0,
+                                                    color: theme.textColor
+                                                },
+                                                grid: { color: theme.gridColor }
+                                            },
+                                            x: {
+                                                grid: { display: false },
+                                                ticks: {
+                                                    color: theme.textColor,
+                                                    maxRotation: 45
+                                                }
+                                            }
+                                        },
+                                        onClick: function(e, elements) {
+                                            if (elements.length > 0) {
+                                                var idx = elements[0].index;
+                                                var alumnos = alumnosData[idx];
+                                                var label = labels[idx];
+                                                var color = colorsData[idx];
+                                                var total = alumnos.length;
+
+                                                if (total === 0) {
+                                                    Swal.fire({
+                                                        title: '<span style="color: ' + color + ';"><i class="fa-solid fa-graduation-cap"></i> ' + label + '</span>',
+                                                        text: @json(__('No hay alumnos en este rango.')),
+                                                        icon: 'info',
+                                                        confirmButtonColor: '#10504B'
+                                                    });
+                                                    return;
+                                                }
+
+                                                var content = '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 5px;">' +
+                                                    '<p style="margin-bottom: 15px; font-size: 0.9rem; color: #64748b;">' + total + ' {{ __("alumno(s) en este rango") }}</p>';
+
+                                                alumnos.forEach(function(a) {
+                                                    var historyUrl = "{{ route('historial.show', ':id') }}".replace(':id', a.idAlumnos);
+                                                    var promColor = a.promedio > 0 && a.promedio < 8.5 ? (a.promedio < 8 ? '#dc2626' : '#f59e0b') : '#059669';
+                                                    content += '<a href="' + historyUrl + '" class="at-risk-modal-item" style="border-left: 4px solid ' + color + ';">' +
+                                                        '<div style="display: flex; align-items: center; gap: 12px;">' +
+                                                        '<img src="https://ui-avatars.com/api/?name=' + encodeURIComponent(a.Nombre) + '+' + encodeURIComponent(a.Apellido) + '&background=' + color.replace('#', '') + '&color=fff" style="width: 32px; height: 32px; border-radius: 50%;">' +
+                                                        '<div><div style="font-weight: 700; font-size: 0.95rem;">' + a.Nombre + ' ' + a.Apellido + '</div>' +
+                                                        '<div style="font-size: 0.75rem; color: #94a3b8;">' + a.Matricula + '</div></div></div>' +
+                                                        '<div style="text-align: right;"><div style="font-size: 0.7rem; color: ' + promColor + '; font-weight: 700; text-transform: uppercase;">PROMEDIO: ' + (a.promedio || 'N/A') + '</div>' +
+                                                        '<i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: #cbd5e1;"></i></div></a>';
+                                                });
+
+                                                content += '</div>';
+
+                                                var isDarkMode = document.body.classList.contains('dark-mode');
+                                                Swal.fire({
+                                                    title: '<span style="color: ' + (isDarkMode ? '#f1f5f9' : color) + ';"><i class="fa-solid fa-graduation-cap"></i> {{ __("Alumnos - ") }} ' + label + '</span>',
+                                                    html: content,
+                                                    showConfirmButton: false,
+                                                    showCloseButton: true,
+                                                    width: '500px',
+                                                    padding: '1.5rem',
+                                                    background: isDarkMode ? '#1e293b' : '#fff',
+                                                    color: isDarkMode ? '#f1f5f9' : '#2d3748'
+                                                });
+                                            }
+                                        }
+                                    }
+                                });
+
+                                window.__charts = window.__charts || [];
+                                window.__charts.push(chart);
+                            })();
+                        </script>
 
                         <div class="table-responsive">
                             <table class="data-table">
@@ -323,6 +421,36 @@
         </main>
     </div>
 
+    <script>
+        (function() {
+            var charts = window.__charts;
+            if (!charts || charts.length === 0) return;
+
+            function updateChartColors() {
+                var isDark = document.body.classList.contains('dark-mode');
+                var textColor = isDark ? '#f1f5f9' : '#2d3748';
+                var gridColor = isDark ? '#334155' : '#e2e8f0';
+
+                charts.forEach(function(chart) {
+                    chart.options.scales.y.ticks.color = textColor;
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.x.ticks.color = textColor;
+                    chart.update();
+                });
+            }
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        updateChartColors();
+                    }
+                });
+            });
+
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        })();
+    </script>
+
     {{-- Modal del Calendario --}}
     <div id="calendar-modal" class="calendar-modal-overlay" style="display:none;">
         <div class="calendar-modal-content">
@@ -335,14 +463,21 @@
     </div>
 
     <style>
-        @media (max-width: 480px) {
-            .vbar-container { gap: 10px; padding: 10px 5px; }
-            .vbar-hover-popup { min-width: 140px; max-width: 180px; left: auto; right: 0; }
+        .enhanced-chart-body canvas {
+            max-height: 160px;
+        }
+        @media (max-width: 600px) {
+            .enhanced-chart-body canvas {
+                max-height: 130px;
+            }
         }
         @media (max-width: 380px) {
             .btn-accion { width: 26px; height: 26px; font-size: 11px; }
             .btn-accion i { font-size: 11px; }
             .acciones-group { gap: 2px; }
+            .enhanced-chart-body canvas {
+                max-height: 110px;
+            }
         }
     </style>
     
@@ -446,69 +581,6 @@
                     : '{{ __("Minimizar") }}';
             };
         });
-    </script>
-
-    <script>
-        // Modal de alumnos por rango de calificación (tubos)
-        window.showTubeAlumnos = function(el) {
-            var alumnos = JSON.parse(el.getAttribute('data-alumnos') || '[]');
-            var label = el.getAttribute('data-label');
-            var color = el.getAttribute('data-color');
-            var total = alumnos.length;
-
-            if (total === 0) {
-                Swal.fire({
-                    title: `<span style="color: ${color};"><i class="fa-solid fa-graduation-cap"></i> ${label}</span>`,
-                    text: @json(__('No hay alumnos en este rango.')),
-                    icon: 'info',
-                    confirmButtonColor: '#10504B'
-                });
-                return;
-            }
-
-            var content = `
-                <div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 5px;">
-                    <p style="margin-bottom: 15px; font-size: 0.9rem; color: #64748b;">
-                        ${total} {{ __('alumno(s) en este rango') }}
-                    </p>
-            `;
-
-            alumnos.forEach(function(a) {
-                var historyUrl = "{{ route('historial.show', ':id') }}".replace(':id', a.idAlumnos);
-                var promColor = a.promedio > 0 && a.promedio < 8.5 ? (a.promedio < 8 ? '#dc2626' : '#f59e0b') : '#059669';
-                content += `
-                    <a href="${historyUrl}" class="at-risk-modal-item" style="border-left: 4px solid ${color};">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(a.Nombre)}+${encodeURIComponent(a.Apellido)}&background=${color.replace('#', '')}&color=fff" style="width: 32px; height: 32px; border-radius: 50%;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 0.95rem;">${a.Nombre} ${a.Apellido}</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">${a.Matricula}</div>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.7rem; color: ${promColor}; font-weight: 700; text-transform: uppercase;">
-                                PROMEDIO: ${a.promedio || 'N/A'}
-                            </div>
-                            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: #cbd5e1;"></i>
-                        </div>
-                    </a>
-                `;
-            });
-
-            content += '</div>';
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            Swal.fire({
-                title: `<span style="color: ${isDarkMode ? '#f1f5f9' : color};"><i class="fa-solid fa-graduation-cap"></i> {{ __('Alumnos - ') }} ${label}</span>`,
-                html: content,
-                showConfirmButton: false,
-                showCloseButton: true,
-                width: '500px',
-                padding: '1.5rem',
-                background: isDarkMode ? '#1e293b' : '#fff',
-                color: isDarkMode ? '#f1f5f9' : '#2d3748'
-            });
-        };
     </script>
 
     <script>

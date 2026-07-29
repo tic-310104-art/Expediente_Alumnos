@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Reporte de Logs de Actividad - UTN</title>
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <style>
         body {
             font-family: 'Arial', sans-serif;

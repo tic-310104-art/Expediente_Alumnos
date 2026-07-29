@@ -93,6 +93,13 @@
                     
                     {{-- FILTROS AVANZADOS --}}
                     <div class="filters-container">
+                        <div class="filter-group filter-group-search">
+                            <label>{{ __('Buscar') }}</label>
+                            <div class="search-wrapper">
+                                <i class="fa-solid fa-search search-icon"></i>
+                                <input type="text" id="filter-search" class="form-control search-input" placeholder="{{ __('Nombre o matrícula...') }}">
+                            </div>
+                        </div>
                         <div class="filter-group">
                             <label>{{ __('Carrera') }}</label>
                             <select id="filter-carrera" class="form-control">
@@ -107,8 +114,17 @@
                             <select id="filter-cuatrimestre" class="form-control">
                                 <option value="">{{ __('Todos') }}</option>
                                 @for($i=1; $i<=11; $i++)
-                                    <option value="{{ $i }}">{{ $i }}</option>
+                                    <option value="{{ $i }}">{{ $i }}°</option>
                                 @endfor
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>{{ __('Grupo') }}</label>
+                            <select id="filter-grupo" class="form-control">
+                                <option value="">{{ __('Todos') }}</option>
+                                @foreach($grupos->pluck('Grupo')->unique() as $grupo)
+                                    <option value="{{ $grupo }}">{{ $grupo }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="filter-group">
@@ -120,9 +136,16 @@
                                 <option value="riesgo">{{ __('En riesgo') }}</option>
                             </select>
                         </div>
-                        <div class="filter-group">
-                            <button id="clear-filters" class="btn-secondary btn-block">{{ __('Limpiar Filtros') }}</button>
+                        <div class="filter-group filter-group-action">
+                            <label>&nbsp;</label>
+                            <button id="clear-filters" class="btn-secondary btn-block">
+                                <i class="fa-solid fa-rotate-left"></i> {{ __('Limpiar') }}
+                            </button>
                         </div>
+                    </div>
+
+                    <div class="filter-count" id="filter-count">
+                        {{ __('Mostrando') }} <span id="filter-showing">{{ count($alumnos) }}</span> {{ __('de') }} <span id="filter-total">{{ count($alumnos) }}</span> {{ __('alumnos') }}
                     </div>
 
                     <div class="table-responsive">
@@ -133,6 +156,7 @@
                                     <th>{{ __('Nombre Completo') }}</th>
                                     <th>{{ __('Carrera') }}</th>
                                     <th>{{ __('Cuatrimestre') }}</th>
+                                    <th>{{ __('Grupo') }}</th>
                                     <th>{{ __('Correo') }}</th>
                                     <th>{{ __('Telefono') }}</th>
                                     <th>{{ __('Estatus') }}</th>
@@ -142,14 +166,18 @@
                             </thead>
                             <tbody>
                                 @foreach($alumnos as $alumno)
-                                <tr class="alumno-row" 
-                                    data-carrera="{{ $alumno->carrera->Nombre ?? '' }}" 
-                                    data-cuatrimestre="{{ $alumno->Cuatrimestre }}" 
-                                    data-estatus="{{ strtolower($alumno->Estatus ?? 'activo') }}">
+<tr class="alumno-row" 
+    data-carrera="{{ $alumno->carrera->Nombre ?? '' }}" 
+    data-cuatrimestre="{{ $alumno->Cuatrimestre }}" 
+    data-estatus="{{ strtolower($alumno->Estatus ?? 'activo') }}"
+    data-grupo="{{ $alumno->grupo->Grupo ?? '' }}"
+    data-matricula="{{ $alumno->Matricula }}"
+    data-nombre="{{ $alumno->Nombre }} {{ $alumno->Apellido }}">
                                     <td data-label="{{ __('Matrícula') }}"><a href="{{ route('alumno.dashboard', $alumno->idAlumnos) }}" class="link-perfil">{{ $alumno->Matricula }}</a></td>
                                     <td data-label="{{ __('Nombre') }}">{{ $alumno->Nombre }} {{ $alumno->Apellido }}</td>
                                     <td data-label="{{ __('Carrera') }}">{{ $alumno->carrera->Nombre ?? __('Sin Carrera') }}</td>
                                     <td data-label="{{ __('Cuatrimestre') }}">{{ $alumno->Cuatrimestre }}</td>
+                                    <td data-label="{{ __('Grupo') }}">{{ $alumno->grupo->Grupo ?? '—' }}</td>
                                     <td data-label="{{ __('Correo') }}">{{ $alumno->Correo_inst}}</td>
                                     <td data-label="{{ __('Teléfono') }}">{{ $alumno->Telefono}}</td>
 <td data-label="{{ __('Estatus') }}">
@@ -220,35 +248,61 @@
             });
         }
 
-        // FILTROS AJAX PARA TABLA
+        // FILTROS Y BÚSQUEDA
+        const filterSearch = document.getElementById('filter-search');
         const filterCarrera = document.getElementById('filter-carrera');
         const filterCuatrimestre = document.getElementById('filter-cuatrimestre');
+        const filterGrupo = document.getElementById('filter-grupo');
         const filterEstatus = document.getElementById('filter-estatus');
         const clearFilters = document.getElementById('clear-filters');
         const rows = document.querySelectorAll('.alumno-row');
+        const filterShowing = document.getElementById('filter-showing');
 
         function applyFilters() {
-            const carrera = filterCarrera.value.toLowerCase();
-            const cuatri = filterCuatrimestre.value;
-            const estatus = filterEstatus.value.toLowerCase();
+            const search = filterSearch ? filterSearch.value.toLowerCase().trim() : '';
+            const carrera = filterCarrera ? filterCarrera.value.toLowerCase() : '';
+            const cuatri = filterCuatrimestre ? filterCuatrimestre.value : '';
+            const grupo = filterGrupo ? filterGrupo.value.toLowerCase() : '';
+            const estatus = filterEstatus ? filterEstatus.value.toLowerCase() : '';
+
+            let visible = 0;
 
             rows.forEach(row => {
-                const rowCarrera = row.getAttribute('data-carrera').toLowerCase();
-                const rowCuatri = row.getAttribute('data-cuatrimestre');
-                const rowEstatus = row.getAttribute('data-estatus').toLowerCase();
+                const rowCarrera = (row.getAttribute('data-carrera') || '').toLowerCase();
+                const rowCuatri = row.getAttribute('data-cuatrimestre') || '';
+                const rowGrupo = (row.getAttribute('data-grupo') || '').toLowerCase();
+                const rowEstatus = (row.getAttribute('data-estatus') || '').toLowerCase();
+                const rowMatricula = (row.getAttribute('data-matricula') || '').toLowerCase();
+                const rowNombre = (row.getAttribute('data-nombre') || '').toLowerCase();
 
                 let show = true;
+                if (search && !rowMatricula.includes(search) && !rowNombre.includes(search)) show = false;
                 if (carrera && rowCarrera !== carrera) show = false;
                 if (cuatri && rowCuatri !== cuatri) show = false;
+                if (grupo && rowGrupo !== grupo) show = false;
                 if (estatus && rowEstatus !== estatus) show = false;
 
                 row.style.display = show ? '' : 'none';
+                if (show) visible++;
             });
+
+            if (filterShowing) filterShowing.textContent = visible;
         }
 
-        if (filterCarrera) {
-            [filterCarrera, filterCuatrimestre, filterEstatus].forEach(f => {
-                if (f) f.addEventListener('change', applyFilters);
+        if (filterSearch) filterSearch.addEventListener('input', applyFilters);
+        if (filterCarrera) filterCarrera.addEventListener('change', applyFilters);
+        if (filterCuatrimestre) filterCuatrimestre.addEventListener('change', applyFilters);
+        if (filterGrupo) filterGrupo.addEventListener('change', applyFilters);
+        if (filterEstatus) filterEstatus.addEventListener('change', applyFilters);
+
+        if (clearFilters) {
+            clearFilters.addEventListener('click', () => {
+                if (filterSearch) filterSearch.value = '';
+                if (filterCarrera) filterCarrera.value = '';
+                if (filterCuatrimestre) filterCuatrimestre.value = '';
+                if (filterGrupo) filterGrupo.value = '';
+                if (filterEstatus) filterEstatus.value = '';
+                applyFilters();
             });
         }
 
@@ -265,18 +319,8 @@
                     willClose: () => form.submit()
                 });
             } else {
-                // Si cancela, regresamos el select al valor anterior (si fuera necesario, pero como es SPA-ish o recarga, el refresh lo arregla)
-                location.reload(); 
+                location.reload();
             }
-        }
-
-        if (clearFilters) {
-            clearFilters.addEventListener('click', () => {
-                filterCarrera.value = '';
-                filterCuatrimestre.value = '';
-                filterEstatus.value = '';
-                applyFilters();
-            });
         }
 
         document.querySelectorAll('form.estatus-form').forEach(f => {

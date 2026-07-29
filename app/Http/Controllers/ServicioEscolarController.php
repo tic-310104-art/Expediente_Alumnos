@@ -48,7 +48,8 @@ class ServicioEscolarController extends Controller
                     $sq->whereIn('Estatus', ['activo', 'riesgo'])->orWhereNull('Estatus');
                 });
             },
-            'tutores as total_tutores'
+            'tutores as total_tutores',
+            'grupos as total_grupos'
         ])->get();
 
         if (!\Illuminate\Support\Facades\Schema::hasTable('backup_schedules')) {

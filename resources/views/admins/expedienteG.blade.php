@@ -8,7 +8,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        .chart-doughnut-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 6px 0;
+        }
+        .chart-doughnut-canvas {
+            flex: 0 0 240px;
+            max-width: 240px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+            transition: filter 0.3s;
+        }
+        .chart-doughnut-canvas:hover {
+            filter: drop-shadow(0 6px 20px rgba(0,0,0,0.18));
+        }
+        .chart-doughnut-canvas canvas {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 1;
+        }
+        .chart-doughnut-legend {
+            flex: 0 1 280px;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        @media (max-width: 700px) {
+            .chart-doughnut-wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+            .chart-doughnut-canvas {
+                flex: 0 0 200px;
+                max-width: 200px;
+            }
+            .chart-doughnut-legend {
+                width: 100%;
+                min-width: unset;
+                flex: unset;
+            }
+        }
+        @media (max-width: 400px) {
+            .chart-doughnut-canvas {
+                flex: 0 0 170px;
+                max-width: 170px;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -38,24 +91,12 @@
 
             <div class="dashboard-grid">
                 <div class="card full-width">
-                    <h3><i class="fa-solid fa-chart-line"></i> {{ __('Estadísticas Generales') }}</h3>
-                    <div class="stats-container" style="margin-bottom: 0;">
-                        <div class="stat-box">
-                            <span class="stat-value">{{ $totalAlumnos }}</span>
-                            <span class="stat-label">{{ __('Alumnos Activos') }}</span>
+                    <h3><i class="fa-solid fa-chart-pie"></i> {{ __('Distribución General del Sistema') }}</h3>
+                    <div class="chart-doughnut-wrapper">
+                        <div class="chart-doughnut-canvas">
+                            <canvas id="chartAdminResumen"></canvas>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-value">{{ $totalBajas }}</span>
-                            <span class="stat-label">{{ __('Bajas del Sistema') }}</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-value">{{ $totalTutores }}</span>
-                            <span class="stat-label">{{ __('Total Tutores') }}</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-value">{{ $totalAdmins }}</span>
-                            <span class="stat-label">{{ __('Total Administradores') }}</span>
-                        </div>
+                        <div class="chart-doughnut-legend" id="chartAdminLegend"></div>
                     </div>
                 </div>
 
@@ -190,6 +231,112 @@
                 icon.style.transform = 'rotate(0deg)';
             }
         }
+
+        // --- Gráfica doughnut de distribución ---
+        function initAdminChart() {
+            var ctx = document.getElementById('chartAdminResumen');
+            if (!ctx) return;
+
+            Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+            var labels = [
+                '{{ __("Alumnos Activos") }}',
+                '{{ __("Bajas") }}',
+                '{{ __("Tutores") }}',
+                '{{ __("Administradores") }}'
+            ];
+            var data = [
+                {{ $totalAlumnos }},
+                {{ $totalBajas }},
+                {{ $totalTutores }},
+                {{ $totalAdmins }}
+            ];
+            var colors = ['#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+
+            function buildLegend() {
+                var container = document.getElementById('chartAdminLegend');
+                if (!container) return;
+                var html = '';
+                for (var i = 0; i < labels.length; i++) {
+                    html += '<div style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:6px;border:1px solid var(--border-color);">' +
+                        '<span style="width:14px;height:14px;border-radius:4px;background:' + colors[i] + ';flex-shrink:0;"></span>' +
+                        '<div style="flex:1;"><div style="font-weight:700;font-size:0.95rem;">' + data[i] + '</div>' +
+                        '<div style="font-size:0.7rem;color:var(--text-muted);line-height:1.2;">' + labels[i] + '</div></div></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            function themeText() {
+                return document.body.classList.contains('dark-mode') ? '#f1f5f9' : '#2d3748';
+            }
+
+            var totalAll = data.reduce(function(a, b) { return a + b; }, 0);
+
+            var centerTextPlugin = {
+                id: 'centerText',
+                afterDraw: function(chart) {
+                    var ctx = chart.ctx;
+                    var meta = chart.getDatasetMeta(0);
+                    if (!meta || !meta.data || !meta.data.length) return;
+                    var centerX = meta.data[0].x;
+                    var centerY = meta.data[0].y;
+                    var isDark = document.body.classList.contains('dark-mode');
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.font = 'bold 32px "Segoe UI", system-ui, sans-serif';
+                    ctx.fillStyle = isDark ? '#f1f5f9' : '#1e293b';
+                    ctx.fillText(totalAll, centerX, centerY - 8);
+                    ctx.font = '12px "Segoe UI", system-ui, sans-serif';
+                    ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+                    ctx.fillText('Total', centerX, centerY + 18);
+                    ctx.restore();
+                }
+            };
+
+            var chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverBorderColor: '#ffffff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutout: '40%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var total = context.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                    var pct = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [centerTextPlugin]
+            });
+
+            buildLegend();
+
+            // Observer dark mode
+            var obs = new MutationObserver(function() {
+                buildLegend();
+                chart.update();
+            });
+            obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        document.addEventListener('DOMContentLoaded', initAdminChart);
 
         async function promptTokenAndActivate() {
             return Swal.fire({

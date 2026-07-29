@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Expediente Académico - {{ $alumno->Nombre }} {{ $alumno->Apellido }}</title>
+    <link rel="shortcut icon" href="{{ asset('logo-utn.ico') }}" type="image/x-icon">
     <style>
         body {
             font-family: 'Arial', sans-serif;
