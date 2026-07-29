@@ -69,27 +69,14 @@ class BackupService
         $ini = "[client]\nuser={$username}\npassword={$password}\nhost={$host}\nport={$port}\n";
         file_put_contents($tmpFile, $ini);
 
-        $mysqldump = 'mysqldump';
-
-        $laragonMysqlPath = 'C:\laragon\bin\mysql';
-        if (is_dir($laragonMysqlPath)) {
-            $dirs = scandir($laragonMysqlPath);
-            foreach ($dirs as $dir) {
-                if ($dir !== '.' && $dir !== '..') {
-                    $candidate = $laragonMysqlPath . '\\' . $dir . '\\bin\\mysqldump.exe';
-                    if (file_exists($candidate)) {
-                        $mysqldump = $candidate;
-                        break;
-                    }
-                }
-            }
-        }
+        $mysqldump = $this->findMysqldump();
 
         $command = escapeshellarg($mysqldump)
             . ' --defaults-extra-file=' . escapeshellarg($tmpFile)
             . ' --routines --triggers --single-transaction'
             . ' --column-statistics=0'
             . ' --set-gtid-purged=OFF'
+            . ' --no-tablespaces'
             . ' --result-file=' . escapeshellarg($backupPath)
             . ' ' . escapeshellarg($database)
             . ' 2>&1';
@@ -138,5 +125,72 @@ class BackupService
             'output' => $output,
             'exit_code' => 0,
         ];
+    }
+
+    public function runMysqlDumpCapture(): array
+    {
+        if (!function_exists('shell_exec')) {
+            return ['success' => false, 'content' => null, 'message' => 'shell_exec() está deshabilitado.'];
+        }
+
+        $conn = config('database.connections.mysql');
+        $host = $conn['host'] ?? '127.0.0.1';
+        $port = (string) ($conn['port'] ?? '3306');
+        $database = $conn['database'] ?? '';
+        $username = $conn['username'] ?? '';
+        $password = $conn['password'] ?? '';
+
+        if ($database === '' || $username === '') {
+            return ['success' => false, 'content' => null, 'message' => 'Configuración de base de datos incompleta.'];
+        }
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'mysqldump_');
+        if (!$tmpFile) {
+            return ['success' => false, 'content' => null, 'message' => 'No se pudo crear archivo temporal.'];
+        }
+
+        $ini = "[client]\nuser={$username}\npassword={$password}\nhost={$host}\nport={$port}\n";
+        file_put_contents($tmpFile, $ini);
+
+        $mysqldump = $this->findMysqldump();
+
+        $command = escapeshellarg($mysqldump)
+            . ' --defaults-extra-file=' . escapeshellarg($tmpFile)
+            . ' --routines --triggers --single-transaction'
+            . ' --column-statistics=0'
+            . ' --set-gtid-purged=OFF'
+            . ' --no-tablespaces'
+            . ' ' . escapeshellarg($database)
+            . ' 2>&1';
+
+        $content = shell_exec($command);
+        @unlink($tmpFile);
+
+        if ($content === null || trim($content) === '') {
+            return ['success' => false, 'content' => null, 'message' => 'mysqldump no generó contenido.'];
+        }
+
+        return ['success' => true, 'content' => $content, 'message' => 'OK'];
+    }
+
+    private function findMysqldump(): string
+    {
+        $mysqldump = 'mysqldump';
+
+        $laragonMysqlPath = 'C:\laragon\bin\mysql';
+        if (PHP_OS_FAMILY === 'Windows' && is_dir($laragonMysqlPath)) {
+            $dirs = scandir($laragonMysqlPath);
+            foreach ($dirs as $dir) {
+                if ($dir !== '.' && $dir !== '..') {
+                    $candidate = $laragonMysqlPath . '\\' . $dir . '\\bin\\mysqldump.exe';
+                    if (file_exists($candidate)) {
+                        $mysqldump = $candidate;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $mysqldump;
     }
 }

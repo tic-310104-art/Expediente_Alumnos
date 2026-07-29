@@ -128,24 +128,23 @@ class ServicioEscolarController extends Controller
 
     public function manualBackup(Request $request)
     {
-        $result = $this->backupService->runMysqlDump(now()->format('Y-m-d'), now()->format('H:i'));
+        $result = $this->backupService->runMysqlDumpCapture();
 
         if (!($result['success'] ?? false)) {
-            $message = __('Error al crear respaldo manual: ') . ($result['message'] ?? 'Error desconocido');
+            $message = __('Error al crear respaldo: ') . ($result['message'] ?? 'Error desconocido');
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => $message], 500);
             }
             return back()->with('import_error', $message);
         }
 
-        $fileSize = file_exists($result['path']) ? ' (' . round(filesize($result['path']) / 1024 / 1024, 2) . ' MB)' : '';
-        \Illuminate\Support\Facades\Log::info('Respaldo manual creado', ['path' => $result['path']]);
+        $filename = 'expediente_' . now()->format('Y-m-d_H-i') . '.sql';
 
-        $message = __('Respaldo manual creado correctamente: ') . basename($result['path']) . $fileSize;
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'message' => $message, 'path' => $result['path']]);
-        }
-        return back()->with('import_success', $message);
+        return response()->streamDownload(function () use ($result) {
+            echo $result['content'];
+        }, $filename, [
+            'Content-Type' => 'application/sql',
+        ]);
     }
 
     public function importBackup(Request $request)

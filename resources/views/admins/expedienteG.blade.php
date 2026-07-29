@@ -409,7 +409,7 @@
                 });
             }
 
-            // Botón: Respaldo Manual
+            // Botón: Respaldo Manual (descarga directa)
             const btnManualBackup = document.getElementById('btn-manual-backup');
             if (btnManualBackup) {
                 btnManualBackup.addEventListener('click', async function() {
@@ -430,24 +430,39 @@
                                 headers: {
                                     'X-CSRF-TOKEN': csrfToken,
                                     'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json'
+                                    'Accept': 'application/sql'
                                 },
                                 body: formData
                             });
 
-                            const raw = await resp.text();
-                            let json = null;
-                            try { json = JSON.parse(raw); } catch (e) { json = null; }
-
-                            if (!json || !resp.ok) {
-                                throw new Error((json && json.message) ? json.message : @json(__('El servidor devolvió una respuesta inesperada.')));
+                            if (!resp.ok) {
+                                const text = await resp.text();
+                                let msg = text;
+                                try { const j = JSON.parse(text); msg = j.message || text; } catch (e) {}
+                                throw new Error(msg);
                             }
 
-                            if (!json.success) {
-                                throw new Error(json.message || @json(__('No se pudo crear el respaldo.')));
-                            }
+                            const blob = await resp.blob();
+                            const disposition = resp.headers.get('Content-Disposition') || '';
+                            const match = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                            const filename = match ? match[1].replace(/['"]/g, '') : 'expediente_' + new Date().toISOString().slice(0,10) + '.sql';
 
-                            Swal.fire(@json(__('¡Respaldo Exitoso!')), json.message, 'success');
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            URL.revokeObjectURL(url);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: @json(__('Descarga iniciada')),
+                                text: @json(__('El archivo .sql se ha descargado correctamente. Guarda el archivo en la ubicación que prefieras.')),
+                                timer: 5000,
+                                timerProgressBar: true
+                            });
                         } catch (e) {
                             Swal.fire(@json(__('Error')), e.message, 'error');
                         }
