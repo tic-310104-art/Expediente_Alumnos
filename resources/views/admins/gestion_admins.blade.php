@@ -73,39 +73,41 @@
 
                 <div class="card full-width">
                     <h3><i class="fa-solid fa-list"></i> Lista de Usuarios</h3>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Clave</th>
-                                <th>Correo</th>
-                                <th>Telefono</th>
-                                <th>Rol</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($admins as $admin)
-                            <tr>
-                                <td data-label="{{ __('Clave') }}">{{ $admin->Clave_Trabajador }}</td>
-                                <td data-label="{{ __('Correo') }}">{{ $admin->Correo ?? $admin->Correo_inst ?? $admin->Email }}</td>
-                                <td data-label="{{ __('Teléfono') }}">{{ $admin->Telefono }}</td>
-                                <td data-label="{{ __('Rol') }}"><span class="badge badge-warning">{{ $admin->Rol }}</span></td>
-                                <td data-label="{{ __('Acciones') }}">
-                                    <div class="action-buttons">
-                                        <a href="{{ route('servicios.edit', $admin->idServicios_Escolares) }}" class="btn-icon btn-edit">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </a>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Clave</th>
+                                    <th>Correo</th>
+                                    <th>Telefono</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($admins as $admin)
+                                <tr>
+                                    <td data-label="{{ __('Clave') }}">{{ $admin->Clave_Trabajador }}</td>
+                                    <td data-label="{{ __('Correo') }}">{{ $admin->Correo ?? $admin->Correo_inst ?? $admin->Email }}</td>
+                                    <td data-label="{{ __('Teléfono') }}">{{ $admin->Telefono }}</td>
+                                    <td data-label="{{ __('Rol') }}"><span class="badge badge-warning">{{ $admin->Rol }}</span></td>
+                                    <td data-label="{{ __('Acciones') }}">
+                                        <div class="action-buttons">
+                                            <a href="{{ route('servicios.edit', $admin->idServicios_Escolares) }}" class="btn-icon btn-edit">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
 
-                                        <button type="button" class="btn-icon btn-delete btn-delete-critical" 
-                                                data-url="{{ route('servicios.destroy', $admin->idServicios_Escolares) }}">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                            <button type="button" class="btn-icon btn-delete btn-delete-critical" 
+                                                    data-url="{{ route('servicios.destroy', $admin->idServicios_Escolares) }}">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
