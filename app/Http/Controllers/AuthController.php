@@ -58,7 +58,7 @@ class AuthController extends Controller
         app()->setLocale('es');
 
         $request->validate([
-            'email'    => ['required', 'email'],
+            'email'    => ['required'],
             'password' => ['required'],
         ]);
 
